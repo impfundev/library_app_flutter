@@ -1,12 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:library_app/src/providers/auth_provider.dart';
 import 'package:library_app/src/providers/navigations_provider.dart';
 
 import 'package:library_app/src/widgets/card_shortcut.dart';
 import 'package:library_app/src/widgets/navigations.dart';
 import 'package:provider/provider.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePage();
+}
+
+class _HomePage extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(
+      Duration.zero,
+      () => Provider.of<AuthProvider>(context, listen: false).getUserDetail(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

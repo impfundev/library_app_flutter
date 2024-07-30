@@ -51,7 +51,7 @@ class ListScreen extends StatelessWidget {
             const BookList(),
             // Loans
             LoanList(
-              memberId: authProvider.user!.id,
+              memberId: authProvider.user?.accountId ?? 0,
             ),
             // Profile
             const Profile(),

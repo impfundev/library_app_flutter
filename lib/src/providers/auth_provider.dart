@@ -160,7 +160,7 @@ class AuthProvider with ChangeNotifier {
   Future<void> getMemberLoan(int id) async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/members/2/loans/'),
+        Uri.parse('$baseUrl/members/$id/loans/'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ${token?.key}'

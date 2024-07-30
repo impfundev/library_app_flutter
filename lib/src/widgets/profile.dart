@@ -5,22 +5,8 @@ import 'package:library_app/src/screens/form_screen.dart';
 import 'package:library_app/src/widgets/navigations.dart';
 import 'package:provider/provider.dart';
 
-class Profile extends StatefulWidget {
+class Profile extends StatelessWidget {
   const Profile({super.key});
-
-  @override
-  State<Profile> createState() => _Profile();
-}
-
-class _Profile extends State<Profile> {
-  @override
-  void initState() {
-    super.initState();
-    Future.delayed(
-      Duration.zero,
-      () => Provider.of<AuthProvider>(context, listen: false).getUserDetail(),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
