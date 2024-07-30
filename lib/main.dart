@@ -42,6 +42,7 @@ class LibraryApp extends StatelessWidget {
           },
         ),
         scrollBehavior: AdaptiveScrollBehavior(),
+        debugShowCheckedModeBanner: false,
       ),
     );
   }
