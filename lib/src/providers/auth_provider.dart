@@ -182,13 +182,12 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> createMemberLoan(int memberId, int bookId, int loanDay) async {
-    final loanDate = DateTime.now();
-    final dueDay = loanDate.day + loanDay;
-    final dueDate = loanDate.add(Duration(days: dueDay));
+    final now = DateTime.now();
+    final dueDate = now.add(Duration(days: loanDay));
     final body = {
       "book": bookId,
       "member": memberId,
-      "loan_date": loanDate.toString(),
+      "loan_date": now.toString(),
       "due_date": dueDate.toString(),
     };
 

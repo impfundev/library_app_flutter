@@ -4,7 +4,6 @@ import 'package:library_app/src/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'package:library_app/src/models/loan.dart';
-import 'package:library_app/src/widgets/forms/search_form.dart';
 import 'package:library_app/src/widgets/loans/loan_item.dart';
 
 class LoanList extends StatefulWidget {
@@ -79,6 +78,8 @@ class _TopAppBar extends State<TopAppBar> {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+
     return SliverAppBar(
       title: Text(showWidget ? "" : title),
       actions: [
@@ -91,16 +92,41 @@ class _TopAppBar extends State<TopAppBar> {
                   showWidget = !showWidget;
                 });
               },
-              icon: Icon(showWidget ? Icons.close : Icons.search),
+              icon: Icon(showWidget ? Icons.close : Icons.filter_alt_outlined),
             ),
             Offstage(
               offstage: !showWidget,
-              child: const SearchForm(),
+              child: Row(
+                children: [
+                  FilledButton(
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: screenSize.width * 0.04,
+                          vertical: screenSize.width * 0.02),
+                    ),
+                    onPressed: () {},
+                    child: const Text('Near Outstanding'),
+                  ),
+                  const SizedBox(
+                    width: 8.0,
+                  ),
+                  FilledButton(
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: screenSize.width * 0.04,
+                          vertical: screenSize.width * 0.02),
+                    ),
+                    onPressed: () {},
+                    child: const Text(
+                      'Overdued',
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
       ],
-      bottom: showWidget ? const LoanTypeFilter() : null,
       elevation: 10.0,
       automaticallyImplyLeading: false,
       expandedHeight: 50,

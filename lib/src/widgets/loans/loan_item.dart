@@ -24,12 +24,16 @@ class LoanItem extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10.0),
-                child: Badge(
-                  label: Text(
-                    remainingDays,
-                  ),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 2.0, horizontal: 10.0),
+                margin: const EdgeInsets.only(bottom: 10.0),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20.0),
+                    color: Theme.of(context).primaryColor),
+                child: Text(
+                  remainingDays,
+                  style: const TextStyle(fontSize: 12.0, color: Colors.white),
                 ),
               ),
               Padding(
