@@ -99,14 +99,18 @@ class _ProfileEditForm extends State<ProfileEditForm> {
                       child: FilledButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {}
-                          authProvider.updateUserDetail(
-                            authProvider.user!.id,
-                            usernameControler.text,
-                            emailControler.text,
-                            firstNameControler.text,
-                            lastNameControler.text,
-                            authProvider.user!.isStaff,
-                          );
+                          authProvider
+                              .updateUserDetail(
+                                authProvider.user!.id,
+                                usernameControler.text,
+                                emailControler.text,
+                                firstNameControler.text,
+                                lastNameControler.text,
+                                authProvider.user!.isStaff,
+                              )
+                              .then(
+                                (res) => Navigator.pop(context),
+                              );
                         },
                         child: const Text("Submit"),
                       ),
