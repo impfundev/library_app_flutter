@@ -27,6 +27,7 @@ class _BookList extends State<BookList> {
         if (bookProvider.books != null) {
           final Iterable<Book> books = bookProvider.books!.map(
             (book) => Book(
+              book["id"],
               book["title"],
               book["author"],
               book["description"],

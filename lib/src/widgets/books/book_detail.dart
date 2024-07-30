@@ -19,8 +19,8 @@ class _BookDetail extends State<BookDetail> {
     final screenSize = MediaQuery.of(context).size;
 
     return DetailScreen(
+      bookId: book.id,
       title: book.title,
-      confirmMessage: "Loans for how many days?",
       textSubmitButton: "Borrow",
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,

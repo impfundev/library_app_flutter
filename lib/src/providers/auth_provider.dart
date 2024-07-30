@@ -188,14 +188,18 @@ class AuthProvider with ChangeNotifier {
     final body = {
       "book": bookId,
       "member": memberId,
-      "loan_date": loanDate,
-      "due_date": dueDate,
+      "loan_date": loanDate.toString(),
+      "due_date": dueDate.toString(),
     };
+
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/members/$memberId/loans/'),
         body: jsonEncode(body),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${token?.key}'
+        },
       );
 
       if (response.statusCode == 200) {
@@ -203,12 +207,12 @@ class AuthProvider with ChangeNotifier {
         memberLoans = data["results"];
       } else {
         debugPrint(
-            "Failed to get member loan. ${response.statusCode}: ${response.body}");
+            "Failed to create member loan. ${response.statusCode}: ${response.body}");
       }
 
       notifyListeners();
     } catch (error) {
-      debugPrint("Failed to get member loan. $error");
+      debugPrint("Failed to create member loan. $error");
     }
   }
 }

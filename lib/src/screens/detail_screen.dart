@@ -4,14 +4,14 @@ import 'package:library_app/src/widgets/forms/book_loan_form.dart';
 class DetailScreen extends StatefulWidget {
   final String? textSubmitButton;
   final String title;
-  final String confirmMessage;
+  final int bookId;
   final Widget body;
 
   const DetailScreen({
     super.key,
     required this.title,
     required this.body,
-    required this.confirmMessage,
+    required this.bookId,
     this.textSubmitButton,
   });
 
@@ -24,6 +24,7 @@ class _DetailScreen extends State<DetailScreen> {
   Widget build(BuildContext context) {
     final String title = widget.title;
     final Widget body = widget.body;
+    final int bookId = widget.bookId;
 
     return Scaffold(
       appBar: AppBar(
@@ -42,7 +43,9 @@ class _DetailScreen extends State<DetailScreen> {
           )
         ],
       ),
-      bottomNavigationBar: const LoanBookForm(),
+      bottomNavigationBar: LoanBookForm(
+        bookId: bookId,
+      ),
     );
   }
 }
