@@ -134,19 +134,6 @@ class _AdminLoginForm extends State<AdminLoginForm> {
                       SizedBox(
                         width: double.infinity,
                         child: TextButton(
-                          child: const Text("Sign Up"),
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => const SignUpScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      SizedBox(
-                        width: double.infinity,
-                        child: TextButton(
                           child: const Text("Forgot Password"),
                           onPressed: () {
                             Navigator.of(context).push(MaterialPageRoute(
