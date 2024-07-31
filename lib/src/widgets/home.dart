@@ -37,6 +37,10 @@ class _HomePage extends State<HomePage> {
           },
           body: ListView(
             children: <Widget>[
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                child: Text("Shortcut"),
+              ),
               Shortcut(
                 icon: Icons.book_rounded,
                 title: "Books",
@@ -44,12 +48,6 @@ class _HomePage extends State<HomePage> {
                 onTap: () {
                   navProvider.navigate(1);
                 },
-              ),
-              Shortcut(
-                icon: Icons.category_rounded,
-                title: "Categories",
-                subtitle: "Find the book by category.",
-                onTap: () {},
               ),
               Shortcut(
                 icon: Icons.date_range_rounded,
