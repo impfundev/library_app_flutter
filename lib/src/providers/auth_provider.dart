@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:library_app/src/models/token.dart';
 import 'package:library_app/src/models/user.dart';
 
+// Flutter: make memberLoans adjustable to be filtered to near outstanding loan and overdued loan
 class AuthProvider with ChangeNotifier {
   String baseUrl = 'http://localhost:8000/api/v1';
 
@@ -13,6 +14,9 @@ class AuthProvider with ChangeNotifier {
   bool get isLoggedIn => token != null;
   bool invalidUsernameOrPassword = false;
   List<dynamic>? memberLoans;
+
+  bool filterByUpcoming = false;
+  bool filterByOverdued = false;
 
   Future<void> signIn(String username, String password) async {
     try {
@@ -157,10 +161,19 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<void> getMemberLoan(int id) async {
+  Future<void> getMemberLoan() async {
+    String url = '$baseUrl/members/${user?.accountId}/loans/';
+    if (filterByUpcoming) {
+      url += '?near_outstanding=True';
+    } else if (filterByOverdued) {
+      url += '?overdue=True';
+    } else {
+      null;
+    }
+
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/members/$id/loans/'),
+        Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ${token?.key}'
@@ -179,6 +192,16 @@ class AuthProvider with ChangeNotifier {
     } catch (error) {
       debugPrint("Failed to get member loan. $error");
     }
+  }
+
+  void setFilterUpcoming() {
+    filterByUpcoming = !filterByUpcoming;
+    notifyListeners();
+  }
+
+  void setFilterOverdued() {
+    filterByOverdued = !filterByOverdued;
+    notifyListeners();
   }
 
   Future<void> createMemberLoan(int memberId, int bookId, int loanDay) async {

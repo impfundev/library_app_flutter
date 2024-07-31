@@ -18,18 +18,16 @@ class _LoanList extends State<LoanList> {
   @override
   void initState() {
     super.initState();
-    Provider.of<AuthProvider>(context, listen: false)
-        .getMemberLoan(widget.memberId);
+    Provider.of<AuthProvider>(context, listen: false).getMemberLoan();
   }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(builder: (context, authProvider, child) {
       if (authProvider.memberLoans != null) {
-        final Iterable<Loan> loans = authProvider.memberLoans!.map(
+        var loans = authProvider.memberLoans!.map(
           (loan) {
-            Map<String, dynamic> bookMap = loan["book_detail"];
-            final book = Book.fromJson(bookMap);
+            var book = Book.fromJson(loan["book_detail"]);
             return Loan(
               book,
               loan["loan_date"],
@@ -39,6 +37,7 @@ class _LoanList extends State<LoanList> {
             );
           },
         );
+
         return NestedScrollView(
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return [const TopAppBar(title: "Book Loans")];
@@ -78,97 +77,107 @@ class _TopAppBar extends State<TopAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
-
-    return SliverAppBar(
-      title: Text(showWidget ? "" : title),
-      actions: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  showWidget = !showWidget;
-                });
-              },
-              icon: Icon(showWidget ? Icons.close : Icons.filter_alt_outlined),
-            ),
-            Offstage(
-              offstage: !showWidget,
-              child: Row(
-                children: [
-                  FilledButton(
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: screenSize.width * 0.04,
-                          vertical: screenSize.width * 0.02),
-                    ),
-                    onPressed: () {},
-                    child: const Text('Near Outstanding'),
-                  ),
-                  const SizedBox(
-                    width: 8.0,
-                  ),
-                  FilledButton(
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: screenSize.width * 0.04,
-                          vertical: screenSize.width * 0.02),
-                    ),
-                    onPressed: () {},
-                    child: const Text(
-                      'Overdued',
-                    ),
-                  ),
-                ],
+    return Consumer<AuthProvider>(builder: (context, authBuilder, child) {
+      return SliverAppBar(
+        title: Text(showWidget ? "" : title),
+        actions: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    showWidget = !showWidget;
+                  });
+                },
+                icon: Icon(
+                  showWidget ? Icons.close : Icons.filter_alt_outlined,
+                ),
               ),
-            ),
-          ],
-        ),
-      ],
-      elevation: 10.0,
-      automaticallyImplyLeading: false,
-      expandedHeight: 50,
-      floating: true,
-      snap: true,
-    );
+              Offstage(
+                offstage: !showWidget,
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [Text("Upcoming"), SwitchToUpcoming()],
+                    ),
+                    SizedBox(
+                      width: 20.0,
+                    ),
+                    Row(
+                      children: [Text("Overdue"), SwitchToOverdued()],
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ],
+        elevation: 10.0,
+        automaticallyImplyLeading: false,
+        expandedHeight: 50,
+        floating: true,
+        snap: true,
+      );
+    });
   }
 }
 
-class LoanTypeFilter extends StatelessWidget implements PreferredSizeWidget {
-  final double sizeAppBar = 50.0;
-
-  const LoanTypeFilter({super.key});
+class SwitchToUpcoming extends StatefulWidget {
+  const SwitchToUpcoming({super.key});
 
   @override
-  Size get preferredSize => Size.fromHeight(sizeAppBar);
+  State<SwitchToUpcoming> createState() => _SwitchToUpcoming();
+}
 
+class _SwitchToUpcoming extends State<SwitchToUpcoming> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const SizedBox(width: 10.0),
-              SizedBox(
-                height: 30.0,
-                child: OutlinedButton(
-                    onPressed: () {}, child: const Text("Near Overdue")),
-              ),
-              const SizedBox(width: 10.0),
-              SizedBox(
-                height: 30.0,
-                child: OutlinedButton(
-                    onPressed: () {}, child: const Text("Overdue")),
-              ),
-            ],
-          ),
-        ),
-      ],
+    return Consumer<AuthProvider>(builder: (context, authProvider, child) {
+      return Switch(
+        value: authProvider.filterByUpcoming,
+        onChanged: (bool value) {
+          setState(() {
+            authProvider.setFilterUpcoming();
+            if (authProvider.filterByUpcoming &&
+                authProvider.filterByOverdued) {
+              authProvider.setFilterOverdued();
+            }
+            authProvider.getMemberLoan();
+          });
+        },
+      );
+    });
+  }
+}
+
+class SwitchToOverdued extends StatefulWidget {
+  const SwitchToOverdued({super.key});
+
+  @override
+  State<SwitchToOverdued> createState() => _SwitchToOverdued();
+}
+
+class _SwitchToOverdued extends State<SwitchToOverdued> {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<AuthProvider>(
+      builder: (context, authProvider, child) {
+        return Switch(
+          value: authProvider.filterByOverdued,
+          onChanged: (bool value) {
+            setState(() {
+              authProvider.setFilterOverdued();
+              if (authProvider.filterByUpcoming &&
+                  authProvider.filterByOverdued) {
+                authProvider.setFilterUpcoming();
+              }
+              authProvider.getMemberLoan();
+            });
+          },
+        );
+      },
     );
   }
 }
