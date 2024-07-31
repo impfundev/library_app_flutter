@@ -87,6 +87,9 @@ class _ListScreen extends State<ListScreen> {
                     return ListTile(
                       title: Text(category.elementAt(index).name),
                       onTap: () {
+                        bookProvider.filterBookByCategory(
+                            category!.elementAt(index).name);
+                        bookProvider.getBooks();
                         Navigator.pop(context);
                       },
                     );

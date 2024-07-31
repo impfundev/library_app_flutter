@@ -14,6 +14,7 @@ class LoanItem extends StatelessWidget {
     final loanDate = formater.format(DateTime.parse(_loan.loanDate));
     final dueDate = formater.format(DateTime.parse(_loan.dueDate));
     final remainingDays = _loan.remainingDays;
+    final isOverdue = _loan.isOverdue;
     final bookTitle = _loan.book.title;
 
     return Container(
@@ -29,10 +30,12 @@ class LoanItem extends StatelessWidget {
                     const EdgeInsets.symmetric(vertical: 2.0, horizontal: 10.0),
                 margin: const EdgeInsets.only(bottom: 10.0),
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20.0),
-                    color: Theme.of(context).primaryColor),
+                  borderRadius: BorderRadius.circular(20.0),
+                  color:
+                      !isOverdue ? Theme.of(context).primaryColor : Colors.red,
+                ),
                 child: Text(
-                  remainingDays,
+                  !isOverdue ? remainingDays : "Overdued",
                   style: const TextStyle(fontSize: 12.0, color: Colors.white),
                 ),
               ),

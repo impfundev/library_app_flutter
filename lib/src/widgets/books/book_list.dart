@@ -95,40 +95,54 @@ class _TopAppBar extends State<TopAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    return SliverAppBar(
-      title: Text(showWidget ? "" : title),
-      actions: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  showWidget = !showWidget;
-                });
-              },
-              icon: Icon(showWidget ? Icons.close : Icons.search),
-            ),
-            Offstage(
-              offstage: !showWidget,
-              child: const SearchForm(),
-            ),
-          ],
-        ),
-      ],
-      leading: !showWidget
-          ? IconButton(
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
-              icon: const Icon(Icons.menu),
-            )
-          : null,
-      elevation: 10.0,
-      automaticallyImplyLeading: false,
-      expandedHeight: 50,
-      floating: true,
-      snap: true,
-    );
+    return Consumer<BookProvider>(builder: (context, bookProvider, child) {
+      final category = bookProvider.filterByCategory;
+      final appBarTitle = category != null ? "$category $title" : title;
+
+      return SliverAppBar(
+        title: Text(showWidget ? "" : appBarTitle),
+        actions: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    showWidget = !showWidget;
+                    if (!showWidget) {
+                      bookProvider.setSearchKeyword(null);
+                      bookProvider.getBooks();
+                    }
+                  });
+                },
+                icon: Icon(showWidget ? Icons.close : Icons.search),
+              ),
+              Offstage(
+                offstage: !showWidget,
+                child: const SearchForm(),
+              ),
+            ],
+          ),
+        ],
+        leading: !showWidget
+            ? IconButton(
+                onPressed: () {
+                  if (category != null) {
+                    bookProvider.filterBookByCategory(null);
+                    bookProvider.getBooks();
+                  } else {
+                    Scaffold.of(context).openDrawer();
+                  }
+                },
+                icon: Icon(category != null ? Icons.close : Icons.menu),
+              )
+            : null,
+        elevation: 10.0,
+        automaticallyImplyLeading: false,
+        expandedHeight: 50,
+        floating: true,
+        snap: true,
+      );
+    });
   }
 }
