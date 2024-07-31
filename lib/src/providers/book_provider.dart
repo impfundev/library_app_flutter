@@ -9,12 +9,20 @@ class BookProvider with ChangeNotifier {
   List<dynamic>? categories;
   Category? category;
 
-  BookProvider({this.books});
+  String? searchKeyword;
+  String? filterByCategory;
 
   Future<void> getBooks() async {
     try {
+      String url = '$baseUrl/books';
+      if (filterByCategory != null) {
+        url += '?category__name=$filterByCategory';
+      } else if (searchKeyword != null) {
+        url += "?search=$searchKeyword";
+      }
+
       final response = await http.get(
-        Uri.parse('$baseUrl/books'),
+        Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -32,25 +40,14 @@ class BookProvider with ChangeNotifier {
     }
   }
 
-  Future<void> searchBook(String? keyword) async {
-    try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/books?search=$keyword'),
-        headers: {'Content-Type': 'application/json'},
-      );
+  void filterBookByCategory(String? name) {
+    filterByCategory = name;
+    notifyListeners();
+  }
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        books = data["results"];
-      } else {
-        final code = response.statusCode;
-        debugPrint("Error: Fetch books failed, $code");
-      }
-
-      notifyListeners();
-    } catch (error) {
-      debugPrint("Error: Fetch books failed, $error");
-    }
+  void setSearchKeyword(String? keyword) {
+    searchKeyword = keyword;
+    notifyListeners();
   }
 
   Future<void> getCategories() async {
