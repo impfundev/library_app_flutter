@@ -75,6 +75,20 @@ class ResetPasswordScreen extends StatelessWidget {
   }
 }
 
+class ConfirmResetPasswordScreen extends StatelessWidget {
+  const ConfirmResetPasswordScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    String title = "Reset Password";
+
+    return FormScreen(
+      title: title,
+      body: const ConfirmResetPasswordForm(),
+    );
+  }
+}
+
 class ProfileEditScreen extends StatelessWidget {
   const ProfileEditScreen({
     super.key,

@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 import 'package:library_app/src/models/token.dart';
 import 'package:library_app/src/models/user.dart';
 
-// Flutter: make memberLoans adjustable to be filtered to near outstanding loan and overdued loan
 class AuthProvider with ChangeNotifier {
   String baseUrl = 'http://localhost:8000/api/v1';
 
@@ -17,6 +16,10 @@ class AuthProvider with ChangeNotifier {
 
   bool filterByUpcoming = false;
   bool filterByOverdued = false;
+
+  int? userIdResetPw;
+  bool resetPasswordTokenSended = false;
+  bool resetPasswordSucced = false;
 
   Future<void> signIn(String username, String password) async {
     try {
@@ -158,6 +161,57 @@ class AuthProvider with ChangeNotifier {
       } catch (error) {
         debugPrint("Error update user details: $error");
       }
+    }
+  }
+
+  Future<void> resetPassword(String email) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/reset-password/request-token'),
+        body: jsonEncode({"email": email}),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        resetPasswordTokenSended = true;
+        userIdResetPw = data["user_id_reset_pw"];
+      } else {
+        debugPrint(
+            'Error reset user password: ${response.statusCode}, ${response.body}');
+      }
+
+      notifyListeners();
+    } catch (error) {
+      debugPrint("Error reset user password: $error");
+    }
+  }
+
+  Future<void> confirmResetPassword(
+      int pin, String password1, String password2) async {
+    final body = jsonEncode({
+      "pin": pin,
+      "password1": password1,
+      "password2": password2,
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/reset-password/confirm'),
+        body: body,
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        resetPasswordSucced = true;
+      } else {
+        debugPrint(
+            'Error confirm reset user password: ${response.statusCode}, ${response.body}');
+      }
+
+      notifyListeners();
+    } catch (error) {
+      debugPrint("Error confirm reset user password: $error");
     }
   }
 
