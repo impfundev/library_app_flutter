@@ -36,6 +36,7 @@ class _ListScreen extends State<ListScreen> {
             },
           );
         }
+
         return Scaffold(
           bottomNavigationBar: NavigationBar(
             onDestinationSelected: (int index) {
