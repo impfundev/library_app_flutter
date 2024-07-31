@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 class BookProvider with ChangeNotifier {
   String baseUrl = 'http://localhost:8000/api/v1';
   List<dynamic>? books;
+  List<dynamic>? categories;
+  Category? category;
 
   BookProvider({this.books});
 
@@ -60,10 +62,9 @@ class BookProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        books = data["results"];
+        categories = data["results"];
       } else {
-        final code = response.statusCode;
-        debugPrint("Error: Fetch books failed, $code");
+        debugPrint("Error: Fetch books failed, ${response.statusCode}");
       }
 
       notifyListeners();
@@ -81,8 +82,7 @@ class BookProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        var category = data["results"];
-        return category;
+        category = data;
       } else {
         final code = response.statusCode;
         debugPrint("Error: Fetch books failed, $code");

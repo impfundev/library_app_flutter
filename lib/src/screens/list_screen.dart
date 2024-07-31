@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:library_app/src/models/category.dart';
 import 'package:library_app/src/providers/auth_provider.dart';
+import 'package:library_app/src/providers/book_provider.dart';
 import 'package:library_app/src/providers/navigations_provider.dart';
 
 import 'package:library_app/src/widgets/books/book_list.dart';
@@ -8,13 +10,32 @@ import 'package:library_app/src/widgets/loans/loan_list.dart';
 import 'package:library_app/src/widgets/profile.dart';
 import 'package:provider/provider.dart';
 
-class ListScreen extends StatelessWidget {
+class ListScreen extends StatefulWidget {
   const ListScreen({super.key});
 
   @override
+  State<ListScreen> createState() => _ListScreen();
+}
+
+class _ListScreen extends State<ListScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<BookProvider>(context, listen: false).getCategories();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Consumer2<NavigationsProvider, AuthProvider>(
-      builder: (context, navProvider, authProvider, child) {
+    return Consumer3<NavigationsProvider, AuthProvider, BookProvider>(
+      builder: (context, navProvider, authProvider, bookProvider, child) {
+        Iterable<Category>? category;
+        if (bookProvider.categories != null) {
+          category = bookProvider.categories!.map(
+            (data) {
+              return Category(data["name"]);
+            },
+          );
+        }
         return Scaffold(
           bottomNavigationBar: NavigationBar(
             onDestinationSelected: (int index) {
@@ -56,6 +77,25 @@ class ListScreen extends StatelessWidget {
             // Profile
             const Profile(),
           ][navProvider.currentPageIndex],
+          drawer: Drawer(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: List.generate(
+                category != null ? category.length : 0,
+                (index) {
+                  if (category != null) {
+                    return ListTile(
+                      title: Text(category.elementAt(index).name),
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                    );
+                  }
+                  return Container();
+                },
+              ),
+            ),
+          ),
         );
       },
     );

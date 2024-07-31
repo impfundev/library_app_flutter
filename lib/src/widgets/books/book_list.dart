@@ -116,6 +116,14 @@ class _TopAppBar extends State<TopAppBar> {
           ],
         ),
       ],
+      leading: !showWidget
+          ? IconButton(
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+              icon: const Icon(Icons.menu),
+            )
+          : null,
       elevation: 10.0,
       automaticallyImplyLeading: false,
       expandedHeight: 50,
