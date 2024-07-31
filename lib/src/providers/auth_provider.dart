@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
@@ -6,11 +8,11 @@ import 'package:library_app/src/models/token.dart';
 import 'package:library_app/src/models/user.dart';
 
 class AuthProvider with ChangeNotifier {
+  final storage = const FlutterSecureStorage();
   String baseUrl = 'http://localhost:8000/api/v1';
 
-  Token? token;
   User? user;
-  bool get isLoggedIn => token != null;
+  bool isLoggedIn = false;
   bool invalidUsernameOrPassword = false;
   List<dynamic>? memberLoans;
 
@@ -20,6 +22,14 @@ class AuthProvider with ChangeNotifier {
   int? userIdResetPw;
   bool resetPasswordTokenSended = false;
   bool resetPasswordSucced = false;
+
+  Future<void> storeAccessToken(String accessToken) async {
+    await storage.write(key: 'access_token', value: accessToken);
+  }
+
+  Future<String?> getAccessToken() async {
+    return await storage.read(key: 'access_token');
+  }
 
   Future<void> signIn(String username, String password) async {
     try {
@@ -31,7 +41,12 @@ class AuthProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        token = Token.fromJson(data);
+        await storeAccessToken(Token.fromJson(data)!.key);
+
+        final token = await getAccessToken();
+        if (token != null) {
+          isLoggedIn = true;
+        }
 
         debugPrint("Login successful $token");
       } else if (response.statusCode == 401) {
@@ -50,17 +65,20 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> signOut() async {
+    final token = await getAccessToken();
+
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/auth/logout'),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${token?.key}'
+          'Authorization': 'Bearer $token'
         },
       );
 
       if (response.statusCode == 200) {
-        token = null;
+        await storage.delete(key: 'token');
+        isLoggedIn = false;
       } else {
         debugPrint("Logout failed: ${response.statusCode} ${response.body}");
       }
@@ -86,7 +104,13 @@ class AuthProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        token = Token.fromJson(data);
+        storeAccessToken(Token.fromJson(data)!.key);
+
+        final token = await getAccessToken();
+        if (token != null) {
+          isLoggedIn = true;
+        }
+
         debugPrint(response.body);
       } else {
         debugPrint(
@@ -100,13 +124,15 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> getUserDetail() async {
+    final token = await getAccessToken();
+
     if (token != null) {
       try {
         final response = await http.get(
           Uri.parse('$baseUrl/user'),
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ${token?.key}'
+            'Authorization': 'Bearer $token'
           },
         );
 
@@ -132,6 +158,8 @@ class AuthProvider with ChangeNotifier {
     String? lastName,
     bool isStaff,
   ) async {
+    final token = await getAccessToken();
+
     if (token != null) {
       try {
         final body = jsonEncode({
@@ -145,7 +173,7 @@ class AuthProvider with ChangeNotifier {
           body: body,
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ${token?.key}'
+            'Authorization': 'Bearer $token'
           },
         );
 
@@ -216,6 +244,8 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> getMemberLoan() async {
+    final token = await getAccessToken();
+
     String url = '$baseUrl/members/${user?.accountId}/loans/';
     if (filterByUpcoming) {
       url += '?near_outstanding=True';
@@ -230,7 +260,7 @@ class AuthProvider with ChangeNotifier {
         Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${token?.key}'
+          'Authorization': 'Bearer $token'
         },
       );
 
@@ -259,6 +289,8 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> createMemberLoan(int memberId, int bookId, int loanDay) async {
+    final token = await getAccessToken();
+
     final now = DateTime.now();
     final dueDate = now.add(Duration(days: loanDay));
     final body = {
@@ -274,7 +306,7 @@ class AuthProvider with ChangeNotifier {
         body: jsonEncode(body),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${token?.key}'
+          'Authorization': 'Bearer $token'
         },
       );
 
