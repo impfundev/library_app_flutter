@@ -134,7 +134,7 @@ class _TopAppBar extends State<TopAppBar> {
                     Scaffold.of(context).openDrawer();
                   }
                 },
-                icon: Icon(category != null ? Icons.close : Icons.menu),
+                icon: Icon(category != null ? Icons.arrow_back : Icons.menu),
               )
             : null,
         elevation: 10.0,
