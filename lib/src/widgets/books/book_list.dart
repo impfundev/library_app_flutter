@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:library_app/src/models/category.dart';
 import 'package:library_app/src/providers/book_provider.dart';
 
 import 'package:library_app/src/widgets/books/book_item.dart';
@@ -25,16 +26,30 @@ class _BookList extends State<BookList> {
     return Consumer<BookProvider>(
       builder: (context, bookProvider, child) {
         if (bookProvider.books != null) {
-          final Iterable<Book> books = bookProvider.books!.map(
-            (book) => Book(
+          final Iterable<Book> books = bookProvider.books!.map((book) {
+            if (book["category_detail"] != null) {
+              final Category category = Category.fromJson(
+                book["category_detail"],
+              );
+              return Book(
+                book["id"],
+                book["title"],
+                book["author"],
+                book["description"],
+                book["cover_image"],
+                category.name,
+              );
+            }
+
+            return Book(
               book["id"],
               book["title"],
               book["author"],
               book["description"],
               book["cover_image"],
-              book["category"],
-            ),
-          );
+              null,
+            );
+          });
 
           return NestedScrollView(
             headerSliverBuilder:

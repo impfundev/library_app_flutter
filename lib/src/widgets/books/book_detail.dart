@@ -40,14 +40,22 @@ class _BookDetail extends State<BookDetail> {
               textAlign: TextAlign.center,
             ),
           ),
-          Text(
-            'By ${book.author}',
-            style: Theme.of(context).textTheme.labelMedium,
-            textAlign: TextAlign.center,
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Text(
+              'By ${book.author}',
+              style: Theme.of(context).textTheme.labelMedium,
+              textAlign: TextAlign.center,
+            ),
           ),
-          Text(
-            book.category ?? "",
-            style: Theme.of(context).textTheme.labelSmall,
+          Offstage(
+            offstage: book.category == null,
+            child: Badge(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              label: Text(
+                book.category ?? "",
+              ),
+            ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 10.0),

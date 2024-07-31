@@ -63,10 +63,15 @@ class BookItem extends StatelessWidget {
                         ),
                       ],
                     ),
-                    Text(
-                      _book.category ?? "",
-                      style: Theme.of(context).textTheme.labelMedium,
-                    ),
+                    Offstage(
+                      offstage: _book.category == null,
+                      child: Badge(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        label: Text(
+                          _book.category ?? "",
+                        ),
+                      ),
+                    )
                   ],
                 ),
               ),

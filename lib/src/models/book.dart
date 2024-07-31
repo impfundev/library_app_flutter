@@ -1,3 +1,5 @@
+import "package:library_app/src/models/category.dart";
+
 class Book {
   int id;
   String title;
@@ -10,13 +12,27 @@ class Book {
       this.category);
 
   factory Book.fromJson(Map<String, dynamic> data) {
+    if (data["category_detail"] != null) {
+      final Category category = Category.fromJson(
+        data["category_detail"],
+      );
+      return Book(
+        data["id"],
+        data["title"],
+        data["author"],
+        data["description"],
+        data["cover_image"],
+        category.name,
+      );
+    }
+
     return Book(
       data['id'] as int,
       data['title'] as String,
       data['author'] as String,
       data['description'] as String,
       data['coverUrl'] as String?,
-      data['category'] as String?,
+      null,
     );
   }
 }
