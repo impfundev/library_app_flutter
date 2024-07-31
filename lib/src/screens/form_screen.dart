@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:library_app/src/providers/auth_provider.dart';
+import 'package:library_app/src/widgets/forms/admin_login_form.dart';
 
 import 'package:library_app/src/widgets/forms/login_form.dart';
 import 'package:library_app/src/widgets/forms/profile_edit_form.dart';
@@ -10,14 +11,25 @@ import 'package:provider/provider.dart';
 class FormScreen extends StatelessWidget {
   final String title;
   final Widget body;
-  const FormScreen({super.key, required this.title, required this.body});
+  final List<Widget>? action;
+  final bool? withBackButton;
+
+  const FormScreen({
+    super.key,
+    required this.title,
+    required this.body,
+    this.action,
+    this.withBackButton,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final bool withBack = withBackButton != null ? withBackButton! : true;
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
-        leading: const BackButton(),
+        leading: withBack ? const BackButton() : null,
+        actions: action,
       ),
       body: ListView(
         children: [
@@ -41,8 +53,32 @@ class LoginScreen extends StatelessWidget {
     String title = "Login";
 
     return FormScreen(
+      withBackButton: false,
       title: title,
+      action: [
+        IconButton(
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => const AdminLoginScreen(),
+              ));
+            },
+            icon: const Icon(Icons.admin_panel_settings_rounded))
+      ],
       body: const LoginForm(),
+    );
+  }
+}
+
+class AdminLoginScreen extends StatelessWidget {
+  const AdminLoginScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    String title = "Admin Login";
+
+    return FormScreen(
+      title: title,
+      body: const AdminLoginForm(),
     );
   }
 }

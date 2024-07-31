@@ -64,6 +64,39 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  Future<void> signInAsAdmin(String username, String password) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/librarians/auth/login'),
+        body: jsonEncode({'username': username, 'password': password}),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        await storeAccessToken(Token.fromJson(data)!.key);
+
+        final token = await getAccessToken();
+        if (token != null) {
+          isLoggedIn = true;
+        }
+
+        debugPrint("Login successful $token");
+      } else if (response.statusCode == 401) {
+        invalidUsernameOrPassword = true;
+
+        debugPrint("Login failed: ${response.statusCode} ${response.body}");
+      } else {
+        final code = response.statusCode;
+        debugPrint("Login failed $code");
+      }
+
+      notifyListeners();
+    } catch (error) {
+      debugPrint("Login failed $error");
+    }
+  }
+
   Future<void> signOut() async {
     final token = await getAccessToken();
 
