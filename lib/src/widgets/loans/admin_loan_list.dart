@@ -6,25 +6,38 @@ import 'package:provider/provider.dart';
 import 'package:library_app/src/models/loan.dart';
 import 'package:library_app/src/widgets/loans/loan_item.dart';
 
-class UpcomingLoanList extends StatefulWidget {
-  const UpcomingLoanList({super.key});
+class AdminLoanList extends StatefulWidget {
+  final String title;
+  final String type;
+
+  const AdminLoanList({
+    super.key,
+    required this.title,
+    required this.type,
+  });
 
   @override
-  State<UpcomingLoanList> createState() => _UpcomingLoanList();
+  State<AdminLoanList> createState() => _AdminLoanList();
 }
 
-class _UpcomingLoanList extends State<UpcomingLoanList> {
+class _AdminLoanList extends State<AdminLoanList> {
+  String get title => widget.title;
+  String get type => widget.type;
+
   @override
   void initState() {
     super.initState();
-    Provider.of<AuthProvider>(context, listen: false).getLoans("upcoming");
+    Provider.of<AuthProvider>(context, listen: false).getLoans(type);
   }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(builder: (context, loanProvider, child) {
-      if (loanProvider.nearOutstandingLoans != null) {
-        var loans = loanProvider.nearOutstandingLoans!.map(
+      final getLoans = type == "upcoming"
+          ? loanProvider.nearOutstandingLoans
+          : loanProvider.overduedLoans;
+      if (getLoans != null) {
+        var loans = getLoans.map(
           (loan) {
             var book = Book.fromJson(loan["book_detail"]);
             return Loan(
@@ -39,7 +52,7 @@ class _UpcomingLoanList extends State<UpcomingLoanList> {
 
         return NestedScrollView(
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return [const TopAppBar(title: "Near Outstanding Loans")];
+            return [TopAppBar(title: title)];
           },
           body: ListView(
             children: List.generate(loans.length, (index) {
@@ -50,7 +63,7 @@ class _UpcomingLoanList extends State<UpcomingLoanList> {
       } else {
         return NestedScrollView(
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return [const TopAppBar(title: "Book Loans")];
+            return [TopAppBar(title: title)];
           },
           body: const Center(
             child: Text("the loan is currently empty"),

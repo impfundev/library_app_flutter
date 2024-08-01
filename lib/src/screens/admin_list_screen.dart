@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:library_app/src/widgets/loans/admin_loan_list.dart';
 import 'package:provider/provider.dart';
 
 import 'package:library_app/src/providers/auth_provider.dart';
@@ -7,8 +8,6 @@ import 'package:library_app/src/providers/navigations_provider.dart';
 
 import 'package:library_app/src/widgets/home.dart';
 import 'package:library_app/src/widgets/profile.dart';
-import 'package:library_app/src/widgets/loans/overdued_loan_list.dart';
-import 'package:library_app/src/widgets/loans/upcoming_loan_list.dart';
 
 class AdminListScreen extends StatefulWidget {
   const AdminListScreen({super.key});
@@ -61,9 +60,10 @@ class _AdminListScreen extends State<AdminListScreen> {
             // Home
             const HomePage(),
             // Near Outstanding Loans
-            const UpcomingLoanList(),
+            const AdminLoanList(
+                title: "Near Outstanding Loans", type: "upcoming"),
             // Overdued Loans
-            const OverduedLoanList(),
+            const AdminLoanList(title: "Overdued Loans", type: "overdue"),
             // Profile
             const Profile(),
           ][navProvider.currentPageIndex],
