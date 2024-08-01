@@ -47,13 +47,11 @@ class _LibraryApp extends State<LibraryApp> {
             final user = authProvider.user;
             final isAuthenticated = authProvider.isAuthenticated;
 
-            if (user != null && user.isStaff) {
-              return isAuthenticated
-                  ? const AdminListScreen()
-                  : const AdminLoginScreen();
-            }
-
-            return isAuthenticated ? const ListScreen() : const LoginScreen();
+            return isAuthenticated
+                ? user != null && user.isStaff
+                    ? const AdminListScreen()
+                    : const ListScreen()
+                : const LoginScreen();
           },
         ),
         scrollBehavior: AdaptiveScrollBehavior(),

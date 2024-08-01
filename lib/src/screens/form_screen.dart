@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:library_app/src/providers/auth_provider.dart';
-import 'package:library_app/src/widgets/forms/admin_login_form.dart';
 
 import 'package:library_app/src/widgets/forms/login_form.dart';
 import 'package:library_app/src/widgets/forms/profile_edit_form.dart';
@@ -55,30 +54,7 @@ class LoginScreen extends StatelessWidget {
     return FormScreen(
       withBackButton: false,
       title: title,
-      action: [
-        IconButton(
-            onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => const AdminLoginScreen(),
-              ));
-            },
-            icon: const Icon(Icons.admin_panel_settings_rounded))
-      ],
       body: const LoginForm(),
-    );
-  }
-}
-
-class AdminLoginScreen extends StatelessWidget {
-  const AdminLoginScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    String title = "Admin Login";
-
-    return FormScreen(
-      title: title,
-      body: const AdminLoginForm(),
     );
   }
 }

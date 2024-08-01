@@ -47,41 +47,7 @@ class AuthProvider with ChangeNotifier {
   Future<void> signIn(String username, String password) async {
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/members/auth/login'),
-        body: jsonEncode({'username': username, 'password': password}),
-        headers: {'Content-Type': 'application/json'},
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        await storeAccessToken(Token.fromJson(data)!.key);
-
-        final token = await getAccessToken();
-        if (token != null) {
-          validateToken();
-        }
-
-        invalidUsernameOrPassword = false;
-        debugPrint("Login successful $token");
-      } else if (response.statusCode == 401) {
-        invalidUsernameOrPassword = true;
-
-        debugPrint("Login failed: ${response.statusCode} ${response.body}");
-      } else {
-        final code = response.statusCode;
-        debugPrint("Login failed $code");
-      }
-
-      notifyListeners();
-    } catch (error) {
-      debugPrint("Login failed $error");
-    }
-  }
-
-  Future<void> signInAsAdmin(String username, String password) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/librarians/auth/login'),
+        Uri.parse('$baseUrl/auth/login'),
         body: jsonEncode({'username': username, 'password': password}),
         headers: {'Content-Type': 'application/json'},
       );
@@ -414,16 +380,5 @@ class AuthProvider with ChangeNotifier {
         debugPrint("Error: Fetch upcoming loans failed, $error");
       }
     }
-  }
-
-  bool onAdminLogin = false;
-  void setAdminLoginOn() {
-    onAdminLogin = true;
-    notifyListeners();
-  }
-
-  void setAdminLoginOff() {
-    onAdminLogin = false;
-    notifyListeners();
   }
 }
