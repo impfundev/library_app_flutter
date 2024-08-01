@@ -3,7 +3,6 @@ import 'package:library_app/src/widgets/loans/admin_loan_list.dart';
 import 'package:provider/provider.dart';
 
 import 'package:library_app/src/providers/auth_provider.dart';
-import 'package:library_app/src/providers/book_provider.dart';
 import 'package:library_app/src/providers/navigations_provider.dart';
 
 import 'package:library_app/src/widgets/home.dart';
@@ -20,7 +19,6 @@ class _AdminListScreen extends State<AdminListScreen> {
   @override
   void initState() {
     super.initState();
-    Provider.of<BookProvider>(context, listen: false).getCategories();
   }
 
   @override
