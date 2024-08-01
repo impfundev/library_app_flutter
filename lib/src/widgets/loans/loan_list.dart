@@ -54,7 +54,7 @@ class _LoanList extends State<LoanList> {
             return [const TopAppBar(title: "Book Loans")];
           },
           body: const Center(
-            child: CircularProgressIndicator(),
+            child: Text("the loan is currently empty"),
           ),
         );
       }

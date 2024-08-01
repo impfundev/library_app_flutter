@@ -1,20 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
-import 'package:library_app/src/providers/book_provider.dart';
-import 'package:library_app/src/screens/form_screen.dart';
-import 'package:provider/provider.dart';
-import 'package:google_fonts/google_fonts.dart';
 
+import 'package:google_fonts/google_fonts.dart';
+import 'package:library_app/src/screens/admin_list_screen.dart';
+import 'package:provider/provider.dart';
 import 'package:library_app/src/providers/auth_provider.dart';
 import 'package:library_app/src/providers/navigations_provider.dart';
+import 'package:library_app/src/providers/book_provider.dart';
+
+import 'package:library_app/src/screens/form_screen.dart';
 import 'package:library_app/src/screens/list_screen.dart';
 
 void main() {
   runApp(const LibraryApp());
 }
 
-class LibraryApp extends StatelessWidget {
+class LibraryApp extends StatefulWidget {
   const LibraryApp({super.key});
+
+  @override
+  State<LibraryApp> createState() => _LibraryApp();
+}
+
+class _LibraryApp extends State<LibraryApp> {
   @override
   Widget build(BuildContext context) {
     const title = 'Library App';
@@ -36,9 +44,16 @@ class LibraryApp extends StatelessWidget {
         ),
         home: Consumer<AuthProvider>(
           builder: (context, authProvider, child) {
-            return authProvider.isLoggedIn
-                ? const ListScreen()
-                : const LoginScreen();
+            final user = authProvider.user;
+            final isAuthenticated = authProvider.isAuthenticated;
+
+            if (user != null && user.isStaff) {
+              return isAuthenticated
+                  ? const AdminListScreen()
+                  : const AdminLoginScreen();
+            }
+
+            return isAuthenticated ? const ListScreen() : const LoginScreen();
           },
         ),
         scrollBehavior: AdaptiveScrollBehavior(),

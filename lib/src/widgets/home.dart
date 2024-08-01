@@ -27,8 +27,8 @@ class _HomePage extends State<HomePage> {
   Widget build(BuildContext context) {
     const title = "Home";
 
-    return Consumer<NavigationsProvider>(
-      builder: (context, navProvider, child) {
+    return Consumer2<NavigationsProvider, AuthProvider>(
+      builder: (context, navProvider, authProvider, child) {
         return NestedScrollView(
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return [
@@ -42,17 +42,29 @@ class _HomePage extends State<HomePage> {
                 child: Text("Shortcut"),
               ),
               Shortcut(
-                icon: Icons.book_rounded,
-                title: "Books",
-                subtitle: "Discover many amazing books.",
+                icon: authProvider.user!.isStaff
+                    ? Icons.timer_outlined
+                    : Icons.book_rounded,
+                title: authProvider.user!.isStaff
+                    ? "Near Outstanding Loans"
+                    : "Books",
+                subtitle: authProvider.user!.isStaff
+                    ? "Discover near outstanding users loans."
+                    : "Discover many amazing books.",
                 onTap: () {
                   navProvider.navigate(1);
                 },
               ),
               Shortcut(
-                icon: Icons.date_range_rounded,
-                title: "Book Loans",
-                subtitle: "Manage your book loan very easy.",
+                icon: authProvider.user!.isStaff
+                    ? Icons.timer_off_rounded
+                    : Icons.date_range_rounded,
+                title: authProvider.user!.isStaff
+                    ? "Overdued Loans"
+                    : "Book Loans",
+                subtitle: authProvider.user!.isStaff
+                    ? "Discover Overdued users loans."
+                    : "Manage your book loan very easy.",
                 onTap: () {
                   navProvider.navigate(2);
                 },

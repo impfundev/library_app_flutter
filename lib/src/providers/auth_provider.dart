@@ -12,7 +12,7 @@ class AuthProvider with ChangeNotifier {
   String baseUrl = 'http://localhost:8000/api/v1';
 
   User? user;
-  bool isLoggedIn = false;
+  bool isAuthenticated = false;
   bool invalidUsernameOrPassword = false;
   List<dynamic>? memberLoans;
 
@@ -31,6 +31,15 @@ class AuthProvider with ChangeNotifier {
     return await storage.read(key: 'access_token');
   }
 
+  Future<void> validateToken() async {
+    String? token = await getAccessToken();
+    bool isValid = token != null;
+
+    if (isValid) {
+      isAuthenticated = true;
+    }
+  }
+
   Future<void> signIn(String username, String password) async {
     try {
       final response = await http.post(
@@ -45,7 +54,7 @@ class AuthProvider with ChangeNotifier {
 
         final token = await getAccessToken();
         if (token != null) {
-          isLoggedIn = true;
+          validateToken();
         }
 
         debugPrint("Login successful $token");
@@ -78,7 +87,7 @@ class AuthProvider with ChangeNotifier {
 
         final token = await getAccessToken();
         if (token != null) {
-          isLoggedIn = true;
+          validateToken();
         }
 
         debugPrint("Login successful $token");
@@ -111,7 +120,8 @@ class AuthProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         await storage.delete(key: 'token');
-        isLoggedIn = false;
+        isAuthenticated = false;
+        user = null;
       } else {
         debugPrint("Logout failed: ${response.statusCode} ${response.body}");
       }
@@ -141,7 +151,7 @@ class AuthProvider with ChangeNotifier {
 
         final token = await getAccessToken();
         if (token != null) {
-          isLoggedIn = true;
+          validateToken();
         }
 
         debugPrint(response.body);
