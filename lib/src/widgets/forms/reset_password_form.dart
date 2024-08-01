@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:library_app/src/providers/auth_provider.dart';
 import 'package:library_app/src/screens/form_screen.dart';
+import 'package:library_app/src/widgets/loading.dart';
 import 'package:provider/provider.dart';
 
 class ResetPasswordForm extends StatefulWidget {
@@ -101,7 +102,9 @@ class _ResetPasswordForm extends State<ResetPasswordForm> {
                                   },
                                 );
                               },
-                              child: const Text("Submit"),
+                              child: authProvider.isLoading
+                                  ? const Loading()
+                                  : const Text("Submit"),
                             ),
                           ),
                         ],
@@ -139,6 +142,12 @@ class _ConfirmResetPasswordForm extends State<ConfirmResetPasswordForm> {
     const String formText = "Enter the pin that we just sent to your email";
 
     return Consumer<AuthProvider>(builder: (context, authProvider, child) {
+      if (authProvider.isLoading) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+
       return Column(
         children: [
           Container(

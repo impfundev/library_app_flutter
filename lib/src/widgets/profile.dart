@@ -18,7 +18,11 @@ class _Profile extends State<Profile> {
     super.initState();
     Future.delayed(
       Duration.zero,
-      () => Provider.of<AuthProvider>(context, listen: false).getUserDetail(),
+      () {
+        if (Provider.of<AuthProvider>(context, listen: false).user == null) {
+          Provider.of<AuthProvider>(context, listen: false).getUserDetail();
+        }
+      },
     );
   }
 
@@ -26,13 +30,16 @@ class _Profile extends State<Profile> {
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(
       builder: (context, authProvider, child) {
+        final isLoading = authProvider.isLoading;
         final user = authProvider.user;
         final firstName = user?.firstName ?? "";
         final lastName = user?.lastName ?? "";
         final fullName = "$firstName $lastName";
 
         if (user == null) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: Text("Failed to fetch user data"));
+        } else if (isLoading) {
+          return const Center(child: CircularProgressIndicator.adaptive());
         } else {
           return NestedScrollView(
             headerSliverBuilder:

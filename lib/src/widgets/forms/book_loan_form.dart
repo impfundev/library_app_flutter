@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:library_app/src/providers/auth_provider.dart';
+import 'package:library_app/src/screens/list/list_screen.dart';
 import 'package:provider/provider.dart';
 
 class LoanBookForm extends StatefulWidget {
@@ -24,6 +25,20 @@ class _LoanBookForm extends State<LoanBookForm> {
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(builder: (context, authProvider, child) {
+      if (authProvider.loanBookSuccess) {
+        return AlertDialog(
+          title: const Text(
+            'Loan book succed!',
+            style: TextStyle(fontSize: 20.0),
+          ),
+          content: FilledButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Continue'),
+          ),
+        );
+      }
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
         child: FilledButton(
