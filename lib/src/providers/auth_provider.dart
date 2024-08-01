@@ -36,9 +36,13 @@ class AuthProvider with ChangeNotifier {
     return await storage.read(key: 'access_token');
   }
 
+  void setLoading(bool value) {
+    isLoading = value;
+  }
+
   Future<void> signIn(String username, String password) async {
-    isLoading = true;
     try {
+      setLoading(true);
       final response = await http.post(
         Uri.parse('$baseUrl/auth/login'),
         body: jsonEncode({'username': username, 'password': password}),
@@ -62,7 +66,7 @@ class AuthProvider with ChangeNotifier {
         debugPrint("Login failed $code");
       }
 
-      isLoading = false;
+      setLoading(false);
       notifyListeners();
     } catch (error) {
       debugPrint("Login failed $error");

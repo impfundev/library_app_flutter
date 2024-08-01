@@ -133,7 +133,16 @@ class _LoginForm extends State<LoginForm> {
                               passwordController.text,
                             );
                           },
-                          child: const Text("Submit"),
+                          child: authProvider.isLoading
+                              ? const SizedBox(
+                                  width: 20.0,
+                                  height: 20.0,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 3.0,
+                                  ),
+                                )
+                              : const Text("Submit"),
                         ),
                       ),
                       SizedBox(
