@@ -6,8 +6,9 @@ import 'package:library_app/src/providers/book_provider.dart';
 import 'package:library_app/src/providers/navigations_provider.dart';
 
 import 'package:library_app/src/widgets/home.dart';
-import 'package:library_app/src/widgets/loans/loan_list.dart';
 import 'package:library_app/src/widgets/profile.dart';
+import 'package:library_app/src/widgets/loans/overdued_loan_list.dart';
+import 'package:library_app/src/widgets/loans/upcoming_loan_list.dart';
 
 class AdminListScreen extends StatefulWidget {
   const AdminListScreen({super.key});
@@ -59,14 +60,10 @@ class _AdminListScreen extends State<AdminListScreen> {
           body: <Widget>[
             // Home
             const HomePage(),
-            // Books
-            LoanList(
-              memberId: authProvider.user?.accountId ?? 0,
-            ),
-            // Loans
-            LoanList(
-              memberId: authProvider.user?.accountId ?? 0,
-            ),
+            // Near Outstanding Loans
+            const UpcomingLoanList(),
+            // Overdued Loans
+            const OverduedLoanList(),
             // Profile
             const Profile(),
           ][navProvider.currentPageIndex],

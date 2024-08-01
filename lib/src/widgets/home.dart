@@ -29,49 +29,50 @@ class _HomePage extends State<HomePage> {
 
     return Consumer2<NavigationsProvider, AuthProvider>(
       builder: (context, navProvider, authProvider, child) {
-        return NestedScrollView(
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return [
-              const TopBar(title: title),
-            ];
-          },
-          body: ListView(
-            children: <Widget>[
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
-                child: Text("Shortcut"),
-              ),
-              Shortcut(
-                icon: authProvider.user!.isStaff
-                    ? Icons.timer_outlined
-                    : Icons.book_rounded,
-                title: authProvider.user!.isStaff
-                    ? "Near Outstanding Loans"
-                    : "Books",
-                subtitle: authProvider.user!.isStaff
-                    ? "Discover near outstanding users loans."
-                    : "Discover many amazing books.",
-                onTap: () {
-                  navProvider.navigate(1);
-                },
-              ),
-              Shortcut(
-                icon: authProvider.user!.isStaff
-                    ? Icons.timer_off_rounded
-                    : Icons.date_range_rounded,
-                title: authProvider.user!.isStaff
-                    ? "Overdued Loans"
-                    : "Book Loans",
-                subtitle: authProvider.user!.isStaff
-                    ? "Discover Overdued users loans."
-                    : "Manage your book loan very easy.",
-                onTap: () {
-                  navProvider.navigate(2);
-                },
-              ),
-            ],
-          ),
-        );
+        final user = authProvider.user;
+        if (user != null) {
+          return NestedScrollView(
+            headerSliverBuilder:
+                (BuildContext context, bool innerBoxIsScrolled) {
+              return [
+                const TopBar(title: title),
+              ];
+            },
+            body: ListView(
+              children: <Widget>[
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Text("Shortcut"),
+                ),
+                Shortcut(
+                  icon:
+                      user.isStaff ? Icons.timer_outlined : Icons.book_rounded,
+                  title: user.isStaff ? "Near Outstanding Loans" : "Books",
+                  subtitle: user.isStaff
+                      ? "Discover near outstanding users loans."
+                      : "Discover many amazing books.",
+                  onTap: () {
+                    navProvider.navigate(1);
+                  },
+                ),
+                Shortcut(
+                  icon: user.isStaff
+                      ? Icons.timer_off_rounded
+                      : Icons.date_range_rounded,
+                  title: user.isStaff ? "Overdued Loans" : "Book Loans",
+                  subtitle: user.isStaff
+                      ? "Discover Overdued users loans."
+                      : "Manage your book loan very easy.",
+                  onTap: () {
+                    navProvider.navigate(2);
+                  },
+                ),
+              ],
+            ),
+          );
+        }
+
+        return Container();
       },
     );
   }

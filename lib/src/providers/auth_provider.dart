@@ -23,6 +23,10 @@ class AuthProvider with ChangeNotifier {
   bool resetPasswordTokenSended = false;
   bool resetPasswordSucced = false;
 
+  List<dynamic>? loans;
+  List<dynamic>? nearOutstandingLoans;
+  List<dynamic>? overduedLoans;
+
   Future<void> storeAccessToken(String accessToken) async {
     await storage.write(key: 'access_token', value: accessToken);
   }
@@ -364,6 +368,49 @@ class AuthProvider with ChangeNotifier {
       notifyListeners();
     } catch (error) {
       debugPrint("Failed to create member loan. $error");
+    }
+  }
+
+  // for admin or librarian
+  Future<void> getLoans(String? type) async {
+    final token = await storage.read(key: 'access_token');
+    String url = baseUrl;
+    if (type == "upcoming") {
+      url += "/upcoming-loans/";
+    } else if (type == "overdue") {
+      url += "/overdued-loans/";
+    } else {
+      url += "/book-loans/";
+    }
+
+    if (token != null) {
+      try {
+        final response = await http.get(
+          Uri.parse(url),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        );
+
+        if (response.statusCode == 200) {
+          final data = jsonDecode(response.body);
+          if (type == "upcoming") {
+            nearOutstandingLoans = data["results"];
+          } else if (type == "overdue") {
+            overduedLoans = data["results"];
+          } else {
+            loans = data["results"];
+          }
+        } else {
+          final code = response.statusCode;
+          debugPrint("Error: Fetch upcoming loans failed, $code");
+        }
+
+        notifyListeners();
+      } catch (error) {
+        debugPrint("Error: Fetch upcoming loans failed, $error");
+      }
     }
   }
 }
