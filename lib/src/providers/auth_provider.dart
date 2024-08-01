@@ -61,6 +61,7 @@ class AuthProvider with ChangeNotifier {
           validateToken();
         }
 
+        invalidUsernameOrPassword = false;
         debugPrint("Login successful $token");
       } else if (response.statusCode == 401) {
         invalidUsernameOrPassword = true;
@@ -94,6 +95,7 @@ class AuthProvider with ChangeNotifier {
           validateToken();
         }
 
+        invalidUsernameOrPassword = false;
         debugPrint("Login successful $token");
       } else if (response.statusCode == 401) {
         invalidUsernameOrPassword = true;
@@ -412,5 +414,16 @@ class AuthProvider with ChangeNotifier {
         debugPrint("Error: Fetch upcoming loans failed, $error");
       }
     }
+  }
+
+  bool onAdminLogin = false;
+  void setAdminLoginOn() {
+    onAdminLogin = true;
+    notifyListeners();
+  }
+
+  void setAdminLoginOff() {
+    onAdminLogin = false;
+    notifyListeners();
   }
 }
