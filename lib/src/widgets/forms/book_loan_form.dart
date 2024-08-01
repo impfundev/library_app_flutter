@@ -47,6 +47,15 @@ class _LoanBookForm extends State<LoanBookForm> {
                       ),
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      validator: (String? value) {
+                        if (value == null || value.isEmpty) {
+                          return "Loan day cannot be empty";
+                        } else if (value is int) {
+                          return "Please enter loan day in number";
+                        } else {
+                          return null;
+                        }
+                      },
                     ),
                   ),
                   actions: [
@@ -58,11 +67,14 @@ class _LoanBookForm extends State<LoanBookForm> {
                     ),
                     FilledButton(
                       onPressed: () {
-                        authProvider.createMemberLoan(
-                          authProvider.user!.accountId,
-                          widget.bookId,
-                          int.parse(loanDayController.text),
-                        );
+                        if (_formKey.currentState!.validate()) {}
+                        authProvider
+                            .createMemberLoan(
+                              authProvider.user!.accountId,
+                              widget.bookId,
+                              int.parse(loanDayController.text),
+                            )
+                            .then((_) => Navigator.of(context).pop());
                       },
                       child: const Text('Submit'),
                     ),
