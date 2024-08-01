@@ -74,10 +74,10 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> signOut() async {
-    isLoading = true;
     final token = await getAccessToken();
 
     try {
+      setLoading(true);
       final response = await http.get(
         Uri.parse('$baseUrl/auth/logout'),
         headers: {
@@ -94,7 +94,7 @@ class AuthProvider with ChangeNotifier {
         debugPrint("Logout failed: ${response.statusCode} ${response.body}");
       }
 
-      isLoading = false;
+      setLoading(false);
       notifyListeners();
     } catch (error) {
       debugPrint("Logout failed $error");

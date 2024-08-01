@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:library_app/src/providers/auth_provider.dart';
 import 'package:library_app/src/screens/form_screen.dart';
+import 'package:library_app/src/widgets/loading.dart';
 import 'package:provider/provider.dart';
 
 class LoginForm extends StatefulWidget {
@@ -134,14 +135,7 @@ class _LoginForm extends State<LoginForm> {
                             );
                           },
                           child: authProvider.isLoading
-                              ? const SizedBox(
-                                  width: 20.0,
-                                  height: 20.0,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 3.0,
-                                  ),
-                                )
+                              ? const Loading()
                               : const Text("Submit"),
                         ),
                       ),
