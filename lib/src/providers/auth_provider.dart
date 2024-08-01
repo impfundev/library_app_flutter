@@ -39,12 +39,19 @@ class AuthProvider with ChangeNotifier {
     String? token = await getAccessToken();
     bool isValid = token != null;
 
-    if (isValid) {
-      isAuthenticated = true;
+    if (!isValid) {
+      isAuthenticated = false;
     }
+
+    isAuthenticated = true;
   }
 
   Future<void> signIn(String username, String password) async {
+    final token = await getAccessToken();
+    if (token != null) {
+      validateToken();
+    }
+
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/auth/login'),
@@ -55,11 +62,6 @@ class AuthProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         await storeAccessToken(Token.fromJson(data)!.key);
-
-        final token = await getAccessToken();
-        if (token != null) {
-          validateToken();
-        }
 
         invalidUsernameOrPassword = false;
         debugPrint("Login successful $token");

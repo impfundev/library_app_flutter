@@ -10,14 +10,14 @@ import 'package:library_app/src/widgets/loans/loan_list.dart';
 import 'package:library_app/src/widgets/profile.dart';
 import 'package:provider/provider.dart';
 
-class ListScreen extends StatefulWidget {
-  const ListScreen({super.key});
+class MemberListScreen extends StatefulWidget {
+  const MemberListScreen({super.key});
 
   @override
-  State<ListScreen> createState() => _ListScreen();
+  State<MemberListScreen> createState() => _MemberListScreen();
 }
 
-class _ListScreen extends State<ListScreen> {
+class _MemberListScreen extends State<MemberListScreen> {
   @override
   void initState() {
     super.initState();

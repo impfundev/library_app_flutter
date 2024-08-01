@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 
 import 'package:google_fonts/google_fonts.dart';
-import 'package:library_app/src/screens/admin_list_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:library_app/src/providers/auth_provider.dart';
 import 'package:library_app/src/providers/navigations_provider.dart';
 import 'package:library_app/src/providers/book_provider.dart';
 
 import 'package:library_app/src/screens/form_screen.dart';
-import 'package:library_app/src/screens/list_screen.dart';
+import 'package:library_app/src/screens/list/list_screen.dart';
 
 void main() {
   runApp(const LibraryApp());
@@ -44,14 +43,9 @@ class _LibraryApp extends State<LibraryApp> {
         ),
         home: Consumer<AuthProvider>(
           builder: (context, authProvider, child) {
-            final user = authProvider.user;
             final isAuthenticated = authProvider.isAuthenticated;
 
-            return isAuthenticated
-                ? user != null && user.isStaff
-                    ? const AdminListScreen()
-                    : const ListScreen()
-                : const LoginScreen();
+            return isAuthenticated ? const ListScreen() : const LoginScreen();
           },
         ),
         scrollBehavior: AdaptiveScrollBehavior(),
