@@ -20,6 +20,7 @@ class AuthProvider with ChangeNotifier {
   bool filterByOverdued = false;
 
   int? userIdResetPw;
+  bool isLoading = false;
   bool resetPasswordTokenSended = false;
   bool resetPasswordSucced = false;
 
@@ -35,23 +36,8 @@ class AuthProvider with ChangeNotifier {
     return await storage.read(key: 'access_token');
   }
 
-  Future<void> validateToken() async {
-    String? token = await getAccessToken();
-    bool isValid = token != null;
-
-    if (!isValid) {
-      isAuthenticated = false;
-    }
-
-    isAuthenticated = true;
-  }
-
   Future<void> signIn(String username, String password) async {
-    final token = await getAccessToken();
-    if (token != null) {
-      validateToken();
-    }
-
+    isLoading = true;
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/auth/login'),
@@ -61,8 +47,10 @@ class AuthProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        await storeAccessToken(Token.fromJson(data)!.key);
+        String token = Token.fromJson(data)!.key;
+        await storeAccessToken(token);
 
+        isAuthenticated = true;
         invalidUsernameOrPassword = false;
         debugPrint("Login successful $token");
       } else if (response.statusCode == 401) {
@@ -74,6 +62,7 @@ class AuthProvider with ChangeNotifier {
         debugPrint("Login failed $code");
       }
 
+      isLoading = false;
       notifyListeners();
     } catch (error) {
       debugPrint("Login failed $error");
@@ -81,6 +70,7 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> signOut() async {
+    isLoading = true;
     final token = await getAccessToken();
 
     try {
@@ -100,6 +90,7 @@ class AuthProvider with ChangeNotifier {
         debugPrint("Logout failed: ${response.statusCode} ${response.body}");
       }
 
+      isLoading = false;
       notifyListeners();
     } catch (error) {
       debugPrint("Logout failed $error");
@@ -107,6 +98,8 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> signUp(String username, String email, String password) async {
+    isLoading = true;
+
     try {
       final body = {
         "username": username,
@@ -121,19 +114,17 @@ class AuthProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        storeAccessToken(Token.fromJson(data)!.key);
+        String token = Token.fromJson(data)!.key;
+        storeAccessToken(token);
+        isAuthenticated = true;
 
-        final token = await getAccessToken();
-        if (token != null) {
-          validateToken();
-        }
-
-        debugPrint(response.body);
+        debugPrint("Signup successful $token");
       } else {
         debugPrint(
             "Error: sign up failed, ${response.statusCode}: ${response.body}");
       }
 
+      isLoading = false;
       notifyListeners();
     } catch (error) {
       debugPrint("Error: sign up failed, $error");
@@ -141,6 +132,7 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> getUserDetail() async {
+    isLoading = true;
     final token = await getAccessToken();
 
     if (token != null) {
@@ -160,6 +152,7 @@ class AuthProvider with ChangeNotifier {
           debugPrint('Error fetching user details: ${response.statusCode}');
         }
 
+        isLoading = true;
         notifyListeners();
       } catch (error) {
         debugPrint('Error user details: $error');
@@ -175,6 +168,7 @@ class AuthProvider with ChangeNotifier {
     String? lastName,
     bool isStaff,
   ) async {
+    isLoading = true;
     final token = await getAccessToken();
 
     if (token != null) {
@@ -202,6 +196,7 @@ class AuthProvider with ChangeNotifier {
               'Error update user details: ${response.statusCode}, ${response.body}');
         }
 
+        isLoading = false;
         notifyListeners();
       } catch (error) {
         debugPrint("Error update user details: $error");
@@ -210,6 +205,8 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> resetPassword(String email) async {
+    isLoading = true;
+
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/reset-password/request-token'),
@@ -226,6 +223,7 @@ class AuthProvider with ChangeNotifier {
             'Error reset user password: ${response.statusCode}, ${response.body}');
       }
 
+      isLoading = false;
       notifyListeners();
     } catch (error) {
       debugPrint("Error reset user password: $error");
@@ -234,6 +232,7 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> confirmResetPassword(
       int pin, String password1, String password2) async {
+    isLoading = true;
     final body = jsonEncode({
       "pin": pin,
       "password1": password1,
@@ -254,6 +253,7 @@ class AuthProvider with ChangeNotifier {
             'Error confirm reset user password: ${response.statusCode}, ${response.body}');
       }
 
+      isLoading = false;
       notifyListeners();
     } catch (error) {
       debugPrint("Error confirm reset user password: $error");
@@ -261,6 +261,7 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> getMemberLoan() async {
+    isLoading = true;
     final token = await getAccessToken();
 
     String url = '$baseUrl/members/${user?.accountId}/loans/';
@@ -289,6 +290,7 @@ class AuthProvider with ChangeNotifier {
             "Failed to get member loan. ${response.statusCode}: ${response.body}");
       }
 
+      isLoading = false;
       notifyListeners();
     } catch (error) {
       debugPrint("Failed to get member loan. $error");
@@ -296,16 +298,21 @@ class AuthProvider with ChangeNotifier {
   }
 
   void setFilterUpcoming() {
+    isLoading = true;
     filterByUpcoming = !filterByUpcoming;
+    isLoading = false;
     notifyListeners();
   }
 
   void setFilterOverdued() {
+    isLoading = true;
     filterByOverdued = !filterByOverdued;
     notifyListeners();
+    isLoading = false;
   }
 
   Future<void> createMemberLoan(int memberId, int bookId, int loanDay) async {
+    isLoading = true;
     final token = await getAccessToken();
 
     final now = DateTime.now();
@@ -335,6 +342,7 @@ class AuthProvider with ChangeNotifier {
             "Failed to create member loan. ${response.statusCode}: ${response.body}");
       }
 
+      isLoading = false;
       notifyListeners();
     } catch (error) {
       debugPrint("Failed to create member loan. $error");
@@ -343,6 +351,7 @@ class AuthProvider with ChangeNotifier {
 
   // for admin or librarian
   Future<void> getLoans(String? type) async {
+    isLoading = true;
     final token = await storage.read(key: 'access_token');
     String url = baseUrl;
     if (type == "upcoming") {
@@ -377,6 +386,7 @@ class AuthProvider with ChangeNotifier {
           debugPrint("Error: Fetch upcoming loans failed, $code");
         }
 
+        isLoading = false;
         notifyListeners();
       } catch (error) {
         debugPrint("Error: Fetch upcoming loans failed, $error");
