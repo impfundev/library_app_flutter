@@ -25,16 +25,23 @@ class _LoanBookForm extends State<LoanBookForm> {
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(builder: (context, authProvider, child) {
       if (authProvider.loanBookSuccess) {
-        return AlertDialog(
-          title: const Text(
-            'Loan book succed!',
-            style: TextStyle(fontSize: 20.0),
-          ),
-          content: FilledButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text('Continue'),
+        final screenSize = MediaQuery.of(context).size;
+        return Center(
+          child: SizedBox(
+            height: screenSize.height * 0.4,
+            child: AlertDialog(
+              title: const Text(
+                'Loan book succed!',
+                style: TextStyle(fontSize: 20.0),
+              ),
+              content: FilledButton(
+                onPressed: () {
+                  authProvider.setLoanBookSuccess(false);
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Continue'),
+              ),
+            ),
           ),
         );
       }

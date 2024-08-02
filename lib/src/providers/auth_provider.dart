@@ -42,6 +42,10 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void setLoanBookSuccess(bool value) {
+    loanBookSuccess = value;
+  }
+
   Future<void> signIn(
       BuildContext context, String username, String password) async {
     try {
