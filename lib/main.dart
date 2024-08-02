@@ -51,6 +51,10 @@ class _LibraryApp extends State<LibraryApp> {
           path: '/confirm-reset-password',
           builder: (context, state) => const ConfirmResetPasswordScreen(),
         ),
+        GoRoute(
+          path: "/change-password",
+          builder: (context, state) => const ChangePasswordScreen(),
+        )
       ],
     );
 

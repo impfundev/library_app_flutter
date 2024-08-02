@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:library_app/src/providers/auth_provider.dart';
 
 import 'package:library_app/src/models/user.dart';
@@ -121,13 +122,7 @@ class _ProfileEditForm extends State<ProfileEditForm> {
                     child: SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const ResetPasswordScreen(),
-                            ),
-                          );
-                        },
+                        onPressed: () => context.go("/change-password"),
                         child: const Text("Change Password"),
                       ),
                     ),

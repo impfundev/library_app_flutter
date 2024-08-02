@@ -23,6 +23,7 @@ class AuthProvider with ChangeNotifier {
   bool isLoading = false;
   bool resetPasswordTokenSended = false;
   bool resetPasswordSucced = false;
+  bool changePasswordSucced = false;
   bool loanBookSuccess = false;
 
   List<dynamic>? loans;
@@ -228,6 +229,45 @@ class AuthProvider with ChangeNotifier {
       } catch (error) {
         debugPrint("Error update user details: $error");
       }
+    }
+  }
+
+  Future<void> changePassword(
+    BuildContext context,
+    int accountId,
+    String oldPassword,
+    String newPassword,
+  ) async {
+    final token = await getAccessToken();
+
+    try {
+      setLoading(true);
+      final response = await http.post(
+        Uri.parse('$baseUrl/members/$accountId/change-password'),
+        body: jsonEncode({
+          "old_password": oldPassword,
+          "new_password": newPassword,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+      );
+
+      if (response.statusCode == 200) {
+        if (context.mounted) {
+          context.go("/");
+        }
+        changePasswordSucced = true;
+      } else {
+        debugPrint(
+            'Change password failed: ${response.statusCode}, ${response.body}');
+      }
+
+      setLoading(false);
+      notifyListeners();
+    } catch (error) {
+      debugPrint("Change password failed: $error");
     }
   }
 
