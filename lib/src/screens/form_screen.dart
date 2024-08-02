@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:library_app/src/widgets/forms/change_password_form.dart';
 
 import 'package:library_app/src/widgets/forms/login_form.dart';
 import 'package:library_app/src/widgets/forms/reset_password_form.dart';
@@ -85,6 +86,21 @@ class SignUpScreen extends StatelessWidget {
       title: title,
       backRoute: "/",
       body: const SignUpForm(),
+    );
+  }
+}
+
+class ChangePasswordScreen extends StatelessWidget {
+  const ChangePasswordScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    String title = "Change Password";
+
+    return FormScreen(
+      title: title,
+      backRoute: "/",
+      body: const ChangePasswordForm(),
     );
   }
 }
