@@ -25,7 +25,7 @@ class _BookList extends State<BookList> {
   Widget build(BuildContext context) {
     return Consumer<BookProvider>(
       builder: (context, bookProvider, child) {
-        if (bookProvider.books != null) {
+        if (!bookProvider.isLoading) {
           final Iterable<Book> books = bookProvider.books!.map((book) {
             if (book["category_detail"] != null) {
               final Category category = Category.fromJson(

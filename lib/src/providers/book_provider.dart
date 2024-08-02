@@ -12,8 +12,15 @@ class BookProvider with ChangeNotifier {
   String? searchKeyword;
   String? filterByCategory;
 
+  bool isLoading = false;
+
+  void setLoading(bool value) {
+    isLoading = value;
+  }
+
   Future<void> getBooks() async {
     try {
+      setLoading(true);
       String url = '$baseUrl/books';
       if (filterByCategory != null) {
         url += '?category__name=$filterByCategory';
@@ -34,6 +41,7 @@ class BookProvider with ChangeNotifier {
         debugPrint("Error: Fetch books failed, $code");
       }
 
+      setLoading(false);
       notifyListeners();
     } catch (error) {
       debugPrint("Error: Fetch books failed, $error");
