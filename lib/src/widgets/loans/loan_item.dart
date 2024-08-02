@@ -44,9 +44,8 @@ class LoanItem extends StatelessWidget {
               Offstage(
                 offstage: user == null,
                 child: Card(
-                  color: Theme.of(context).primaryColor,
+                  color: Theme.of(context).canvasColor,
                   child: ListTile(
-                    textColor: Colors.white,
                     title: Text(user != null ? user!.username : ""),
                     subtitle: Text(user != null ? user!.email : ""),
                   ),
