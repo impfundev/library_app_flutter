@@ -2,11 +2,13 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 
 import 'package:library_app/src/models/loan.dart';
+import 'package:library_app/src/models/user.dart';
 
 class LoanItem extends StatelessWidget {
   final Loan _loan;
+  final User? user;
 
-  const LoanItem(this._loan, {super.key});
+  const LoanItem(this._loan, {super.key, this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +39,17 @@ class LoanItem extends StatelessWidget {
                 child: Text(
                   !isOverdue ? remainingDays : "Overdued",
                   style: const TextStyle(fontSize: 12.0, color: Colors.white),
+                ),
+              ),
+              Offstage(
+                offstage: user == null,
+                child: Card(
+                  color: Theme.of(context).primaryColor,
+                  child: ListTile(
+                    textColor: Colors.white,
+                    title: Text(user != null ? user!.username : ""),
+                    subtitle: Text(user != null ? user!.email : ""),
+                  ),
                 ),
               ),
               Padding(

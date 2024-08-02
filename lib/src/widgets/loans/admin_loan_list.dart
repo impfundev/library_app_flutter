@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:library_app/src/models/book.dart';
+import 'package:library_app/src/models/user.dart';
 import 'package:library_app/src/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -45,8 +46,21 @@ class _AdminLoanList extends State<AdminLoanList> {
         var loans = getLoans.map(
           (loan) {
             var book = Book.fromJson(loan["book_detail"]);
+            var memberData = loan["member_detail"];
+            var userData = memberData["user"];
+            var user = User(
+              userData["id"],
+              memberData["id"],
+              userData["username"],
+              userData["email"],
+              userData["first_name"],
+              userData["last_name"],
+              userData["is_staff"],
+            );
+
             return Loan(
               book,
+              user,
               loan["loan_date"],
               loan["due_date"],
               loan["remaining_loan_time"],
@@ -61,7 +75,10 @@ class _AdminLoanList extends State<AdminLoanList> {
           },
           body: ListView(
             children: List.generate(loans.length, (index) {
-              return LoanItem(loans.elementAt(index));
+              return LoanItem(
+                loans.elementAt(index),
+                user: loans.elementAt(index).user,
+              );
             }),
           ),
         );

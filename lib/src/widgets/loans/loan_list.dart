@@ -35,6 +35,7 @@ class _LoanList extends State<LoanList> {
             var book = Book.fromJson(loan["book_detail"]);
             return Loan(
               book,
+              null,
               loan["loan_date"],
               loan["due_date"],
               loan["remaining_loan_time"],
