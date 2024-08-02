@@ -27,9 +27,14 @@ class _SearchForm extends State<SearchForm> {
         hintText: "Enter keywords...",
         elevation: WidgetStateProperty.all(0),
         onChanged: (value) {
-          Provider.of<BookProvider>(context, listen: false)
-              .setSearchKeyword(value);
-          Provider.of<BookProvider>(context, listen: false).getBooks();
+          Future.delayed(
+            Duration.zero,
+            () {
+              Provider.of<BookProvider>(context, listen: false)
+                  .setSearchKeyword(value);
+              Provider.of<BookProvider>(context, listen: false).getBooks();
+            },
+          );
         },
         leading: const Icon(Icons.search),
       ),
