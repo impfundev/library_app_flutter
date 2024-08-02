@@ -4,9 +4,14 @@ import 'package:library_app/src/screens/list/admin_list_screen.dart';
 import 'package:library_app/src/screens/list/member_list_screen.dart';
 import 'package:provider/provider.dart';
 
-class ListScreen extends StatelessWidget {
+class ListScreen extends StatefulWidget {
   const ListScreen({super.key});
 
+  @override
+  State<ListScreen> createState() => _ListScreen();
+}
+
+class _ListScreen extends State<ListScreen> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<AuthProvider>(context).user;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -26,13 +27,41 @@ class _LibraryApp extends State<LibraryApp> {
   Widget build(BuildContext context) {
     const title = 'Library App';
 
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, state) =>
+              Provider.of<AuthProvider>(context).isAuthenticated
+                  ? const ListScreen()
+                  : const LoginScreen(),
+        ),
+        GoRoute(
+          path: '/sign-up',
+          builder: (context, state) =>
+              Provider.of<AuthProvider>(context).isAuthenticated
+                  ? const ListScreen()
+                  : const SignUpScreen(),
+        ),
+        GoRoute(
+          path: '/reset-password',
+          builder: (context, state) => const ResetPasswordScreen(),
+        ),
+        GoRoute(
+          path: '/confirm-reset-password',
+          builder: (context, state) => const ConfirmResetPasswordScreen(),
+        ),
+      ],
+    );
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => AuthProvider()),
         ChangeNotifierProvider(create: (context) => NavigationsProvider()),
         ChangeNotifierProvider(create: (context) => BookProvider()),
       ],
-      child: MaterialApp(
+      child: MaterialApp.router(
+        routerConfig: router,
         title: title,
         theme: ThemeData(
           textTheme: GoogleFonts.poppinsTextTheme(),
@@ -40,13 +69,6 @@ class _LibraryApp extends State<LibraryApp> {
             seedColor: const Color.fromRGBO(108, 99, 255, 1.000),
           ),
           useMaterial3: true,
-        ),
-        home: Consumer<AuthProvider>(
-          builder: (context, authProvider, child) {
-            final isAuthenticated = authProvider.isAuthenticated;
-
-            return isAuthenticated ? const ListScreen() : const LoginScreen();
-          },
         ),
         scrollBehavior: AdaptiveScrollBehavior(),
         debugShowCheckedModeBanner: false,

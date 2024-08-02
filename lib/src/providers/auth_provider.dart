@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:flutter/foundation.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:library_app/src/models/token.dart';
@@ -41,7 +43,8 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> signIn(String username, String password) async {
+  Future<void> signIn(
+      BuildContext context, String username, String password) async {
     try {
       setLoading(true);
       final response = await http.post(
@@ -57,6 +60,7 @@ class AuthProvider with ChangeNotifier {
 
         isAuthenticated = true;
         invalidUsernameOrPassword = false;
+
         debugPrint("Login successful $token");
       } else if (response.statusCode == 401) {
         invalidUsernameOrPassword = true;
@@ -67,10 +71,11 @@ class AuthProvider with ChangeNotifier {
         debugPrint("Login failed $code");
       }
 
-      setLoading(true);
+      setLoading(false);
       notifyListeners();
     } catch (error) {
       debugPrint("Login failed $error");
+      setLoading(false);
     }
   }
 
@@ -113,7 +118,8 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<void> signUp(String username, String email, String password) async {
+  Future<void> signUp(BuildContext context, String username, String email,
+      String password) async {
     try {
       setLoading(true);
       final body = {
@@ -133,6 +139,9 @@ class AuthProvider with ChangeNotifier {
         storeAccessToken(token);
         isAuthenticated = true;
 
+        if (context.mounted) {
+          context.go("/");
+        }
         debugPrint("Signup successful $token");
       } else {
         debugPrint(

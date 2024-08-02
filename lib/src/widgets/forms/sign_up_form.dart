@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:library_app/src/providers/auth_provider.dart';
-import 'package:library_app/src/screens/form_screen.dart';
 import 'package:provider/provider.dart';
 
 class SignUpForm extends StatefulWidget {
@@ -131,6 +131,7 @@ class _SignUpForm extends State<SignUpForm> {
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {}
                             authProvider.signUp(
+                              context,
                               usernameController.text,
                               emailController.text,
                               passwordController.text,
@@ -143,13 +144,7 @@ class _SignUpForm extends State<SignUpForm> {
                         width: double.infinity,
                         child: TextButton(
                           child: const Text("Login"),
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => const LoginScreen(),
-                              ),
-                            );
-                          },
+                          onPressed: () => context.go("/"),
                         ),
                       ),
                     ],

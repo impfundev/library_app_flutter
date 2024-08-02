@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:library_app/src/providers/auth_provider.dart';
-import 'package:library_app/src/screens/form_screen.dart';
 import 'package:library_app/src/widgets/loading.dart';
 import 'package:provider/provider.dart';
 
@@ -130,6 +130,7 @@ class _LoginForm extends State<LoginForm> {
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {}
                             authProvider.signIn(
+                              context,
                               usernameController.text,
                               passwordController.text,
                             );
@@ -143,24 +144,14 @@ class _LoginForm extends State<LoginForm> {
                         width: double.infinity,
                         child: TextButton(
                           child: const Text("Sign Up"),
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => const SignUpScreen(),
-                              ),
-                            );
-                          },
+                          onPressed: () => context.go("/sign-up"),
                         ),
                       ),
                       SizedBox(
                         width: double.infinity,
                         child: TextButton(
                           child: const Text("Forgot Password"),
-                          onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => const ResetPasswordScreen(),
-                            ));
-                          },
+                          onPressed: () => context.go("/reset-password"),
                         ),
                       ),
                     ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:library_app/src/providers/auth_provider.dart';
 
 import 'package:library_app/src/widgets/forms/login_form.dart';
@@ -7,19 +8,32 @@ import 'package:library_app/src/widgets/forms/reset_password_form.dart';
 import 'package:library_app/src/widgets/forms/sign_up_form.dart';
 import 'package:provider/provider.dart';
 
-class FormScreen extends StatelessWidget {
+class FormScreen extends StatefulWidget {
   final String title;
   final Widget body;
   final List<Widget>? action;
   final bool? withBackButton;
+  final String? backRoute;
 
   const FormScreen({
     super.key,
     required this.title,
     required this.body,
+    this.backRoute,
     this.action,
     this.withBackButton,
   });
+
+  @override
+  State<FormScreen> createState() => _FormScreen();
+}
+
+class _FormScreen extends State<FormScreen> {
+  String get title => widget.title;
+  Widget get body => widget.body;
+  List<Widget>? get action => widget.action;
+  bool? get withBackButton => widget.withBackButton;
+  String? get backRoute => widget.backRoute;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +41,11 @@ class FormScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
-        leading: withBack ? const BackButton() : null,
+        leading: withBack
+            ? BackButton(
+                onPressed: () => context.push(backRoute ?? ""),
+              )
+            : null,
         actions: action,
       ),
       body: ListView(
@@ -68,6 +86,7 @@ class SignUpScreen extends StatelessWidget {
 
     return FormScreen(
       title: title,
+      backRoute: "/",
       body: const SignUpForm(),
     );
   }
@@ -82,6 +101,7 @@ class ResetPasswordScreen extends StatelessWidget {
 
     return FormScreen(
       title: title,
+      backRoute: "/",
       body: const ResetPasswordForm(),
     );
   }
@@ -96,6 +116,7 @@ class ConfirmResetPasswordScreen extends StatelessWidget {
 
     return FormScreen(
       title: title,
+      withBackButton: false,
       body: const ConfirmResetPasswordForm(),
     );
   }
@@ -110,11 +131,25 @@ class ProfileEditScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     String title = "Edit Profile";
 
-    return Consumer<AuthProvider>(builder: (context, authProvider, child) {
-      return FormScreen(
-        title: title,
-        body: ProfileEditForm(user: authProvider.user),
-      );
-    });
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+        leading: BackButton(
+          onPressed: () => context.pop(),
+        ),
+      ),
+      body: Consumer<AuthProvider>(
+        builder: (context, authProvider, child) {
+          return ListView(children: [
+            Container(
+              width: double.infinity,
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
+              child: ProfileEditForm(user: authProvider.user),
+            ),
+          ]);
+        },
+      ),
+    );
   }
 }
