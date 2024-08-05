@@ -23,7 +23,7 @@ class BookProvider with ChangeNotifier {
       setLoading(true);
       String url = '$baseUrl/books';
       if (filterByCategory != null) {
-        url += '?category__name=$filterByCategory';
+        url += '?category=$filterByCategory';
       } else if (searchKeyword != null) {
         url += "?search=$searchKeyword";
       }
@@ -35,7 +35,7 @@ class BookProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        books = data["results"];
+        books = data;
       } else {
         final code = response.statusCode;
         debugPrint("Error: Fetch books failed, $code");

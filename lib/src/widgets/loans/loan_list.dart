@@ -32,7 +32,7 @@ class _LoanList extends State<LoanList> {
       if (authProvider.memberLoans != null) {
         var loans = authProvider.memberLoans!.map(
           (loan) {
-            var book = Book.fromJson(loan["book_detail"]);
+            var book = Book.fromJson(loan["book"]);
             return Loan(
               book,
               null,

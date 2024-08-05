@@ -27,9 +27,9 @@ class _BookList extends State<BookList> {
       builder: (context, bookProvider, child) {
         if (!bookProvider.isLoading) {
           final Iterable<Book> books = bookProvider.books!.map((book) {
-            if (book["category_detail"] != null) {
+            if (book["category"] != null) {
               final Category category = Category.fromJson(
-                book["category_detail"],
+                book["category"],
               );
               return Book(
                 book["id"],
@@ -127,14 +127,9 @@ class _TopAppBar extends State<TopAppBar> {
         leading: !showWidget
             ? IconButton(
                 onPressed: () {
-                  if (category != null) {
-                    bookProvider.filterBookByCategory(null);
-                    bookProvider.getBooks();
-                  } else {
-                    Scaffold.of(context).openDrawer();
-                  }
+                  Scaffold.of(context).openDrawer();
                 },
-                icon: Icon(category != null ? Icons.arrow_back : Icons.menu),
+                icon: const Icon(Icons.menu),
               )
             : null,
         elevation: 10.0,

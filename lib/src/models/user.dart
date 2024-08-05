@@ -1,19 +1,17 @@
 class User {
   int id;
-  int accountId;
   String username;
   String email;
   String? firstName;
   String? lastName;
   bool isStaff;
 
-  User(this.id, this.accountId, this.username, this.email, this.firstName,
-      this.lastName, this.isStaff);
+  User(this.id, this.username, this.email, this.firstName, this.lastName,
+      this.isStaff);
 
   factory User.fromJson(Map<String, dynamic> data) {
     return User(
       data['id'] as int,
-      data['account_id'] as int,
       data['username'] as String,
       data['email'] as String,
       data['first_name'] as String?,
@@ -36,7 +34,6 @@ class User {
 
 final User initialUser = User(
   1,
-  2,
   "test_user",
   "test@email.com",
   "Test",

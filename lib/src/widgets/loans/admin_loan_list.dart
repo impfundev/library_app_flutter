@@ -50,7 +50,6 @@ class _AdminLoanList extends State<AdminLoanList> {
             var userData = memberData["user"];
             var user = User(
               userData["id"],
-              memberData["id"],
               userData["username"],
               userData["email"],
               userData["first_name"],
