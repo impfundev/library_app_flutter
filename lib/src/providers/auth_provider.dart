@@ -146,12 +146,15 @@ class AuthProvider with ChangeNotifier {
         String token = Token.fromJson(data)!.key;
         storeAccessToken(token);
         isAuthenticated = true;
+        message = null;
 
         if (context.mounted) {
           context.go("/");
         }
         debugPrint("Signup successful $token");
       } else {
+        final data = jsonDecode(response.body);
+        message = data["message"];
         debugPrint(
             "Error: sign up failed, ${response.statusCode}: ${response.body}");
       }

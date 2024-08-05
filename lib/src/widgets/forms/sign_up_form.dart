@@ -40,6 +40,8 @@ class _SignUpForm extends State<SignUpForm> {
     const String formText = "Sign In to get started";
 
     return Consumer<AuthProvider>(builder: (context, authProvider, child) {
+      final message = authProvider.message;
+
       return Column(
         children: [
           Padding(
@@ -120,8 +122,10 @@ class _SignUpForm extends State<SignUpForm> {
                     },
                     keyboardType: TextInputType.visiblePassword,
                   ),
-                  const SizedBox(
-                    height: 20.0,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20.0),
+                    child: Text(message ?? "",
+                        style: const TextStyle(color: Colors.red)),
                   ),
                   Column(
                     children: [
