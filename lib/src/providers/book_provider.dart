@@ -60,6 +60,7 @@ class BookProvider with ChangeNotifier {
 
   Future<void> getCategories() async {
     try {
+      setLoading(true);
       final response = await http.get(
         Uri.parse('$baseUrl/categories'),
         headers: {'Content-Type': 'application/json'},
@@ -67,11 +68,12 @@ class BookProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        categories = data["results"];
+        categories = data;
       } else {
         debugPrint("Error: Fetch books failed, ${response.statusCode}");
       }
 
+      setLoading(false);
       notifyListeners();
     } catch (error) {
       debugPrint("Error: Fetch books failed, $error");
