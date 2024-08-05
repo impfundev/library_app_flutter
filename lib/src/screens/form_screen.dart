@@ -99,7 +99,7 @@ class ChangePasswordScreen extends StatelessWidget {
 
     return FormScreen(
       title: title,
-      backRoute: "/",
+      backRoute: "/profile-edit",
       body: const ChangePasswordForm(),
     );
   }

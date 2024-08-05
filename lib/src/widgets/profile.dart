@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:library_app/src/providers/auth_provider.dart';
-
-import 'package:library_app/src/screens/profile_edit_screen.dart';
-import 'package:library_app/src/widgets/navigations.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
+
+import 'package:library_app/src/providers/auth_provider.dart';
+import 'package:library_app/src/widgets/navigations.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -81,11 +81,7 @@ class _Profile extends State<Profile> {
                     FilledButton(
                       child: const Text("Edit Profile"),
                       onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const ProfileEditScreen(),
-                          ),
-                        );
+                        context.go("/profile-edit");
                       },
                     ),
                     const SizedBox(

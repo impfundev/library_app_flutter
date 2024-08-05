@@ -459,13 +459,13 @@ class AuthProvider with ChangeNotifier {
   // for admin or librarian
   Future<void> getLoans(String? type) async {
     final token = await storage.read(key: 'access_token');
-    String url = baseUrl;
+    String url = "$baseUrl/book-loans";
     if (type == "upcoming") {
-      url += "/upcoming-loans/";
+      url += '?near_outstanding=True';
     } else if (type == "overdue") {
-      url += "/overdued-loans/";
+      url += '?overdue=True';
     } else {
-      url += "/book-loans/";
+      null;
     }
 
     if (token != null) {
@@ -482,11 +482,11 @@ class AuthProvider with ChangeNotifier {
         if (response.statusCode == 200) {
           final data = jsonDecode(response.body);
           if (type == "upcoming") {
-            nearOutstandingLoans = data["results"];
+            nearOutstandingLoans = data;
           } else if (type == "overdue") {
-            overduedLoans = data["results"];
+            overduedLoans = data;
           } else {
-            loans = data["results"];
+            loans = data;
           }
         } else {
           final code = response.statusCode;

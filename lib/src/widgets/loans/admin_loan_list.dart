@@ -45,17 +45,8 @@ class _AdminLoanList extends State<AdminLoanList> {
       if (getLoans != null) {
         var loans = getLoans.map(
           (loan) {
-            var book = Book.fromJson(loan["book_detail"]);
-            var memberData = loan["member_detail"];
-            var userData = memberData["user"];
-            var user = User(
-              userData["id"],
-              userData["username"],
-              userData["email"],
-              userData["first_name"],
-              userData["last_name"],
-              userData["is_staff"],
-            );
+            var book = Book.fromJson(loan["book"]);
+            var user = User.fromJson(loan["user"]);
 
             return Loan(
               book,

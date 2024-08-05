@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:go_router/go_router.dart';
 import 'package:library_app/src/providers/auth_provider.dart';
 import 'package:library_app/src/widgets/loading.dart';
 import 'package:provider/provider.dart';
@@ -139,33 +138,22 @@ class _ChangePasswordForm extends State<ChangePasswordForm> {
                   const SizedBox(
                     height: 20.0,
                   ),
-                  Column(
-                    children: [
-                      SizedBox(
-                        width: double.infinity,
-                        child: FilledButton(
-                          onPressed: () async {
-                            if (_formKey.currentState!.validate()) {}
-                            authProvider.changePassword(
-                              context,
-                              oldPasswordController.text,
-                              newPasswordController1.text,
-                              newPasswordController2.text,
-                            );
-                          },
-                          child: authProvider.isLoading
-                              ? const Loading()
-                              : const Text("Submit"),
-                        ),
-                      ),
-                      SizedBox(
-                        width: double.infinity,
-                        child: TextButton(
-                          child: const Text("Cancel"),
-                          onPressed: () => context.pop("/"),
-                        ),
-                      ),
-                    ],
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {}
+                        authProvider.changePassword(
+                          context,
+                          oldPasswordController.text,
+                          newPasswordController1.text,
+                          newPasswordController2.text,
+                        );
+                      },
+                      child: authProvider.isLoading
+                          ? const Loading()
+                          : const Text("Submit"),
+                    ),
                   ),
                 ],
               ),
