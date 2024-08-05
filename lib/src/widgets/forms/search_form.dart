@@ -24,7 +24,7 @@ class _SearchForm extends State<SearchForm> {
       width: queryData.size.width * 0.8,
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: SearchBar(
-        hintText: "Enter keywords...",
+        hintText: "Enter book title...",
         elevation: WidgetStateProperty.all(0),
         onChanged: (value) {
           if (value.length >= 3) {

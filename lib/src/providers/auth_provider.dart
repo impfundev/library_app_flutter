@@ -49,6 +49,10 @@ class AuthProvider with ChangeNotifier {
     loanBookSuccess = value;
   }
 
+  void setInvalidUsernameOrPassword(bool value) {
+    invalidUsernameOrPassword = value;
+  }
+
   Future<void> signIn(
       BuildContext context, String username, String password) async {
     try {
@@ -65,16 +69,14 @@ class AuthProvider with ChangeNotifier {
         await storeAccessToken(token);
 
         isAuthenticated = true;
-        invalidUsernameOrPassword = false;
+        setInvalidUsernameOrPassword(false);
 
         debugPrint("Login successful $token");
-      } else if (response.statusCode == 401) {
-        invalidUsernameOrPassword = true;
-
+      } else if (response.statusCode == 400) {
+        setInvalidUsernameOrPassword(true);
         debugPrint("Login failed: ${response.statusCode} ${response.body}");
       } else {
-        final code = response.statusCode;
-        debugPrint("Login failed $code");
+        debugPrint("Login failed: ${response.statusCode} ${response.body}");
       }
 
       setLoading(false);
