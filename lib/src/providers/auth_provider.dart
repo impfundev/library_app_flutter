@@ -53,6 +53,25 @@ class AuthProvider with ChangeNotifier {
     invalidUsernameOrPassword = value;
   }
 
+  void resetAllState() {
+    user = null;
+    message = null;
+    memberLoans = null;
+    loans = null;
+    nearOutstandingLoans = null;
+    overduedLoans = null;
+
+    isAuthenticated = false;
+    invalidUsernameOrPassword = false;
+    filterByUpcoming = false;
+    filterByOverdued = false;
+    isLoading = false;
+    resetPasswordTokenSended = false;
+    resetPasswordSucced = false;
+    changePasswordSucced = false;
+    loanBookSuccess = false;
+  }
+
   Future<void> signIn(
       BuildContext context, String username, String password) async {
     try {
@@ -102,19 +121,7 @@ class AuthProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         await storage.delete(key: 'token');
-        isAuthenticated = false;
-        user = null;
-        filterByUpcoming = false;
-        filterByOverdued = false;
-        memberLoans = null;
-
-        isLoading = false;
-        resetPasswordTokenSended = false;
-        resetPasswordSucced = false;
-
-        loans = null;
-        nearOutstandingLoans = null;
-        overduedLoans = null;
+        resetAllState();
       } else {
         debugPrint("Logout failed: ${response.statusCode} ${response.body}");
       }
