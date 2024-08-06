@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:library_app/src/providers/auth_provider.dart';
 
 import 'package:library_app/src/models/user.dart';
@@ -120,16 +119,6 @@ class _ProfileEditForm extends State<ProfileEditForm> {
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () => context.go("/change-password"),
-                        child: const Text("Change Password"),
-                      ),
-                    ),
-                  )
                 ],
               ),
             ),

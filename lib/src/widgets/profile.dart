@@ -78,11 +78,21 @@ class _Profile extends State<Profile> {
                         textAlign: TextAlign.center,
                       ),
                     ),
+                    const SizedBox(
+                      height: 10.0,
+                    ),
                     FilledButton(
                       child: const Text("Edit Profile"),
                       onPressed: () {
-                        context.go("/profile-edit");
+                        context.push("/profile-edit");
                       },
+                    ),
+                    const SizedBox(
+                      height: 10.0,
+                    ),
+                    ElevatedButton(
+                      onPressed: () => context.push("/change-password"),
+                      child: const Text("Change Password"),
                     ),
                     const SizedBox(
                       height: 10.0,

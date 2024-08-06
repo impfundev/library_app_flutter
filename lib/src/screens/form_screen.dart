@@ -41,7 +41,9 @@ class _FormScreen extends State<FormScreen> {
         title: Text(title),
         leading: withBack
             ? BackButton(
-                onPressed: () => context.push(backRoute ?? ""),
+                onPressed: () => backRoute != null
+                    ? context.push(backRoute!)
+                    : context.pop(),
               )
             : null,
         actions: action,
@@ -99,7 +101,7 @@ class ChangePasswordScreen extends StatelessWidget {
 
     return FormScreen(
       title: title,
-      backRoute: "/profile-edit",
+      backRoute: null,
       body: const ChangePasswordForm(),
     );
   }

@@ -18,7 +18,7 @@ class ProfileEditScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(title),
         leading: BackButton(
-          onPressed: () => context.push("/"),
+          onPressed: () => context.pop(),
         ),
       ),
       body: Consumer<AuthProvider>(
