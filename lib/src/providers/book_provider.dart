@@ -31,7 +31,7 @@ class BookProvider with ChangeNotifier {
         url += '?category=$filterByCategory';
       } else if (searchKeyword != null) {
         url += "?search=$searchKeyword";
-      } else if (pageNumber != null) {
+      } else if (pageNumber > 1) {
         url += "?page=$pageNumber";
       }
 
