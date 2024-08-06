@@ -12,6 +12,11 @@ class BookProvider with ChangeNotifier {
   String? searchKeyword;
   String? filterByCategory;
 
+  bool hasNextPage = false;
+  bool hasPrevPage = false;
+  int pageNumber = 1;
+  int? totalPages;
+
   bool isLoading = false;
 
   void setLoading(bool value) {
@@ -26,6 +31,8 @@ class BookProvider with ChangeNotifier {
         url += '?category=$filterByCategory';
       } else if (searchKeyword != null) {
         url += "?search=$searchKeyword";
+      } else if (pageNumber != null) {
+        url += "?page=$pageNumber";
       }
 
       final response = await http.get(
@@ -35,7 +42,11 @@ class BookProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        books = data;
+        books = data["data"];
+        hasNextPage = data["has_next"];
+        hasPrevPage = data["has_prev"];
+        pageNumber = data["page_number"];
+        totalPages = data["total_pages"];
       } else {
         final code = response.statusCode;
         debugPrint("Error: Fetch books failed, $code");
@@ -55,6 +66,11 @@ class BookProvider with ChangeNotifier {
 
   void setSearchKeyword(String? keyword) {
     searchKeyword = keyword;
+    notifyListeners();
+  }
+
+  void setPage(int value) {
+    pageNumber = value;
     notifyListeners();
   }
 

@@ -489,11 +489,11 @@ class AuthProvider with ChangeNotifier {
         if (response.statusCode == 200) {
           final data = jsonDecode(response.body);
           if (type == "upcoming") {
-            nearOutstandingLoans = data;
+            nearOutstandingLoans = data["data"];
           } else if (type == "overdue") {
-            overduedLoans = data;
+            overduedLoans = data["data"];
           } else {
-            loans = data;
+            loans = data["data"];
           }
         } else {
           final code = response.statusCode;

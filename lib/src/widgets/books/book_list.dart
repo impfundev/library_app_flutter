@@ -22,59 +22,105 @@ class _BookList extends State<BookList> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  ScrollController listScrollController = ScrollController();
+  void scrollToTop() {
+    if (listScrollController.hasClients) {
+      final position = listScrollController.position.minScrollExtent;
+      listScrollController.jumpTo(position);
+    }
+  }
+
+  Future<void> nextPage() async {
+    if (Provider.of<BookProvider>(context, listen: false).hasNextPage) {
+      Provider.of<BookProvider>(context, listen: false).setPage(
+        Provider.of<BookProvider>(context, listen: false).pageNumber + 1,
+      );
+    } else {
+      Provider.of<BookProvider>(context, listen: false).setPage(
+          Provider.of<BookProvider>(context, listen: false).totalPages!);
+    }
+    Provider.of<BookProvider>(context, listen: false).getBooks();
+    scrollToTop();
+  }
+
+  Future<void> prevPage() async {
+    if (Provider.of<BookProvider>(context, listen: false).hasPrevPage) {
+      Provider.of<BookProvider>(context, listen: false).setPage(
+        Provider.of<BookProvider>(context, listen: false).pageNumber - 1,
+      );
+    } else {
+      Provider.of<BookProvider>(context, listen: false).setPage(1);
+    }
+
+    Provider.of<BookProvider>(context, listen: false).getBooks();
+    scrollToTop();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Consumer<BookProvider>(
       builder: (context, bookProvider, child) {
-        if (!bookProvider.isLoading) {
-          final Iterable<Book> books = bookProvider.books!.map((book) {
-            if (book["category"] != null) {
-              final Category category = Category.fromJson(
-                book["category"],
-              );
-              return Book(
-                book["id"],
-                book["title"],
-                book["author"],
-                book["description"],
-                book["cover_image"],
-                category.name,
-              );
-            }
-
+        final Iterable<Book> books = bookProvider.books!.map((book) {
+          if (book["category"] != null) {
+            final Category category = Category.fromJson(
+              book["category"],
+            );
             return Book(
               book["id"],
               book["title"],
               book["author"],
               book["description"],
               book["cover_image"],
-              null,
+              category.name,
             );
-          });
+          }
 
-          return NestedScrollView(
-            headerSliverBuilder:
-                (BuildContext context, bool innerBoxIsScrolled) {
-              return [const TopAppBar(title: "Books")];
-            },
-            body: ListView(
-              children: List.generate(books.length, (index) {
-                return BookItem(
-                  books.elementAt(index),
+          return Book(
+            book["id"],
+            book["title"],
+            book["author"],
+            book["description"],
+            book["cover_image"],
+            null,
+          );
+        });
+
+        return NestedScrollView(
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return [const TopAppBar(title: "Books")];
+          },
+          body: ListView.builder(
+            controller: listScrollController,
+            itemCount: books.length + 1,
+            itemBuilder: (context, index) {
+              if (index < books.length) {
+                return BookItem(books.elementAt(index));
+              } else {
+                return Container(
+                  padding: const EdgeInsets.all(10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ElevatedButton(
+                        onPressed: prevPage,
+                        child: const Text('Prev'),
+                      ),
+                      Text(bookProvider.pageNumber.toString()),
+                      ElevatedButton(
+                        onPressed: nextPage,
+                        child: const Text('Next'),
+                      ),
+                    ],
+                  ),
                 );
-              }),
-            ),
-          );
-        } else {
-          return NestedScrollView(
-            headerSliverBuilder:
-                (BuildContext context, bool innerBoxIsScrolled) {
-              return [const TopAppBar(title: "Books")];
+              }
             },
-            body: const Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
-        }
+          ),
+        );
       },
     );
   }
