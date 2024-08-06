@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 import 'package:library_app/src/screens/profile_edit_screen.dart';
-import 'package:library_app/src/widgets/profile.dart';
 import 'package:provider/provider.dart';
 import 'package:library_app/src/providers/auth_provider.dart';
 import 'package:library_app/src/providers/navigations_provider.dart';
