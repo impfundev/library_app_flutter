@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:library_app/src/providers/auth_provider.dart';
 
 import 'package:library_app/src/models/user.dart';
@@ -43,6 +42,7 @@ class _ProfileEditForm extends State<ProfileEditForm> {
     lastNameControler.text = user?.lastName ?? "";
 
     return Consumer<AuthProvider>(builder: (context, authProvider, child) {
+      final message = authProvider.message;
       return Column(
         children: [
           Form(
@@ -62,6 +62,7 @@ class _ProfileEditForm extends State<ProfileEditForm> {
                       if (value == null || value.isEmpty) {
                         return "Please enter your username";
                       }
+
                       return null;
                     },
                   ),
@@ -75,6 +76,7 @@ class _ProfileEditForm extends State<ProfileEditForm> {
                       if (value == null || value.isEmpty) {
                         return "Please enter your email";
                       }
+
                       return null;
                     },
                   ),
@@ -92,6 +94,10 @@ class _ProfileEditForm extends State<ProfileEditForm> {
                       labelText: "Last Name",
                     ),
                   ),
+                  Text(
+                    message ?? "",
+                    style: const TextStyle(color: Colors.red),
+                  ),
                   Padding(
                     padding: const EdgeInsets.only(top: 40.0),
                     child: SizedBox(
@@ -99,33 +105,20 @@ class _ProfileEditForm extends State<ProfileEditForm> {
                       child: FilledButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {}
-                          authProvider
-                              .updateUserDetail(
-                                authProvider.user!.id,
-                                usernameControler.text,
-                                emailControler.text,
-                                firstNameControler.text,
-                                lastNameControler.text,
-                                authProvider.user!.isStaff,
-                              )
-                              .then(
-                                (res) => Navigator.pop(context),
-                              );
+                          authProvider.updateUserDetail(
+                            context,
+                            authProvider.user!.id,
+                            usernameControler.text,
+                            emailControler.text,
+                            firstNameControler.text,
+                            lastNameControler.text,
+                            authProvider.user!.isStaff,
+                          );
                         },
                         child: const Text("Submit"),
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () => context.go("/change-password"),
-                        child: const Text("Change Password"),
-                      ),
-                    ),
-                  )
                 ],
               ),
             ),

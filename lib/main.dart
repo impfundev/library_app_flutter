@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:google_fonts/google_fonts.dart';
+import 'package:library_app/src/screens/profile_edit_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:library_app/src/providers/auth_provider.dart';
 import 'package:library_app/src/providers/navigations_provider.dart';
@@ -54,7 +55,11 @@ class _LibraryApp extends State<LibraryApp> {
         GoRoute(
           path: "/change-password",
           builder: (context, state) => const ChangePasswordScreen(),
-        )
+        ),
+        GoRoute(
+          path: "/profile-edit",
+          builder: (context, state) => const ProfileEditScreen(),
+        ),
       ],
     );
 

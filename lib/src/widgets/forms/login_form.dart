@@ -39,7 +39,8 @@ class _LoginForm extends State<LoginForm> {
     const String formText = "Log In to continue";
 
     return Consumer<AuthProvider>(builder: (context, authProvider, child) {
-      final isInvalid = authProvider.invalidUsernameOrPassword;
+      final isInvalidUsernameOrPassword =
+          authProvider.invalidUsernameOrPassword;
 
       return Column(
         children: [
@@ -106,28 +107,21 @@ class _LoginForm extends State<LoginForm> {
                     },
                     keyboardType: TextInputType.visiblePassword,
                   ),
-                  Visibility(
-                    visible: isInvalid,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Theme.of(context).highlightColor,
-                      ),
-                      margin: const EdgeInsets.symmetric(vertical: 20.0),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10.0, vertical: 8.0),
-                      child: const Text("Invalid username or password"),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20.0),
+                    child: Text(
+                      isInvalidUsernameOrPassword
+                          ? "Invalid username or password"
+                          : "",
+                      style: const TextStyle(color: Colors.red),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 20.0,
                   ),
                   Column(
                     children: [
                       SizedBox(
                         width: double.infinity,
                         child: FilledButton(
-                          onPressed: () {
+                          onPressed: () async {
                             if (_formKey.currentState!.validate()) {}
                             authProvider.signIn(
                               context,

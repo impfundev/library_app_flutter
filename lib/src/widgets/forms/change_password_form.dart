@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:go_router/go_router.dart';
 import 'package:library_app/src/providers/auth_provider.dart';
 import 'package:library_app/src/widgets/loading.dart';
 import 'package:provider/provider.dart';
@@ -15,7 +14,8 @@ class ChangePasswordForm extends StatefulWidget {
 class _ChangePasswordForm extends State<ChangePasswordForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final oldPasswordController = TextEditingController();
-  final newPasswordController = TextEditingController();
+  final newPasswordController1 = TextEditingController();
+  final newPasswordController2 = TextEditingController();
 
   bool passwordVisible = false;
 
@@ -28,7 +28,8 @@ class _ChangePasswordForm extends State<ChangePasswordForm> {
   @override
   void dispose() {
     oldPasswordController.dispose();
-    newPasswordController.dispose();
+    newPasswordController1.dispose();
+    newPasswordController2.dispose();
     super.dispose();
   }
 
@@ -37,6 +38,7 @@ class _ChangePasswordForm extends State<ChangePasswordForm> {
     Size screenSize = MediaQuery.of(context).size;
 
     return Consumer<AuthProvider>(builder: (context, authProvider, child) {
+      final message = authProvider.message;
       return Column(
         children: [
           Padding(
@@ -79,7 +81,7 @@ class _ChangePasswordForm extends State<ChangePasswordForm> {
                       ),
                     ),
                     validator: (String? value) {
-                      if (value == null || value.isEmpty) {
+                      if (value == null) {
                         return "Please enter your old password";
                       } else {
                         return null;
@@ -88,7 +90,7 @@ class _ChangePasswordForm extends State<ChangePasswordForm> {
                     keyboardType: TextInputType.visiblePassword,
                   ),
                   TextFormField(
-                    controller: newPasswordController,
+                    controller: newPasswordController1,
                     obscureText: passwordVisible,
                     decoration: InputDecoration(
                       hintText: "Enter your New Password",
@@ -107,7 +109,7 @@ class _ChangePasswordForm extends State<ChangePasswordForm> {
                       ),
                     ),
                     validator: (String? value) {
-                      if (value == null || value.isEmpty) {
+                      if (value == null) {
                         return "Please enter your new password";
                       } else {
                         return null;
@@ -115,36 +117,43 @@ class _ChangePasswordForm extends State<ChangePasswordForm> {
                     },
                     keyboardType: TextInputType.visiblePassword,
                   ),
+                  TextFormField(
+                    controller: newPasswordController2,
+                    decoration: const InputDecoration(
+                      hintText: "Confirm your New Password",
+                      labelText: "Confirm New Password",
+                    ),
+                    validator: (String? value) {
+                      if (value == null) {
+                        return "Please enter your confirm new password";
+                      } else {
+                        return null;
+                      }
+                    },
+                  ),
+                  Text(
+                    message ?? "",
+                    style: const TextStyle(color: Colors.red),
+                  ),
                   const SizedBox(
                     height: 20.0,
                   ),
-                  Column(
-                    children: [
-                      SizedBox(
-                        width: double.infinity,
-                        child: FilledButton(
-                          onPressed: () async {
-                            if (_formKey.currentState!.validate()) {}
-                            authProvider.changePassword(
-                              context,
-                              authProvider.user!.accountId,
-                              oldPasswordController.text,
-                              newPasswordController.text,
-                            );
-                          },
-                          child: authProvider.isLoading
-                              ? const Loading()
-                              : const Text("Submit"),
-                        ),
-                      ),
-                      SizedBox(
-                        width: double.infinity,
-                        child: TextButton(
-                          child: const Text("Cancel"),
-                          onPressed: () => context.pop("/"),
-                        ),
-                      ),
-                    ],
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {}
+                        authProvider.changePassword(
+                          context,
+                          oldPasswordController.text,
+                          newPasswordController1.text,
+                          newPasswordController2.text,
+                        );
+                      },
+                      child: authProvider.isLoading
+                          ? const Loading()
+                          : const Text("Submit"),
+                    ),
                   ),
                 ],
               ),

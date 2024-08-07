@@ -10,7 +10,9 @@ import 'package:library_app/src/models/user.dart';
 
 class AuthProvider with ChangeNotifier {
   final storage = const FlutterSecureStorage();
+
   String baseUrl = 'http://localhost:8000/api/v1';
+  String? message;
 
   User? user;
   bool isAuthenticated = false;
@@ -25,6 +27,11 @@ class AuthProvider with ChangeNotifier {
   bool resetPasswordSucced = false;
   bool changePasswordSucced = false;
   bool loanBookSuccess = false;
+
+  bool hasNextPage = false;
+  bool hasPrevPage = false;
+  int pageNumber = 1;
+  int? totalPages;
 
   List<dynamic>? loans;
   List<dynamic>? nearOutstandingLoans;
@@ -47,6 +54,37 @@ class AuthProvider with ChangeNotifier {
     loanBookSuccess = value;
   }
 
+  void setInvalidUsernameOrPassword(bool value) {
+    invalidUsernameOrPassword = value;
+  }
+
+  void resetAllState() {
+    user = null;
+    message = null;
+    memberLoans = null;
+    loans = null;
+    nearOutstandingLoans = null;
+    overduedLoans = null;
+    totalPages = null;
+
+    isAuthenticated = false;
+    invalidUsernameOrPassword = false;
+    filterByUpcoming = false;
+    filterByOverdued = false;
+    isLoading = false;
+    resetPasswordTokenSended = false;
+    resetPasswordSucced = false;
+    changePasswordSucced = false;
+    loanBookSuccess = false;
+    hasNextPage = false;
+    hasPrevPage = false;
+  }
+
+  void setPage(int value) {
+    pageNumber = value;
+    notifyListeners();
+  }
+
   Future<void> signIn(
       BuildContext context, String username, String password) async {
     try {
@@ -57,22 +95,20 @@ class AuthProvider with ChangeNotifier {
         headers: {'Content-Type': 'application/json'},
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         final data = jsonDecode(response.body);
         String token = Token.fromJson(data)!.key;
         await storeAccessToken(token);
 
         isAuthenticated = true;
-        invalidUsernameOrPassword = false;
+        setInvalidUsernameOrPassword(false);
 
         debugPrint("Login successful $token");
-      } else if (response.statusCode == 401) {
-        invalidUsernameOrPassword = true;
-
+      } else if (response.statusCode == 400) {
+        setInvalidUsernameOrPassword(true);
         debugPrint("Login failed: ${response.statusCode} ${response.body}");
       } else {
-        final code = response.statusCode;
-        debugPrint("Login failed $code");
+        debugPrint("Login failed: ${response.statusCode} ${response.body}");
       }
 
       setLoading(false);
@@ -98,19 +134,7 @@ class AuthProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         await storage.delete(key: 'token');
-        isAuthenticated = false;
-        user = null;
-        filterByUpcoming = false;
-        filterByOverdued = false;
-        memberLoans = null;
-
-        isLoading = false;
-        resetPasswordTokenSended = false;
-        resetPasswordSucced = false;
-
-        loans = null;
-        nearOutstandingLoans = null;
-        overduedLoans = null;
+        resetAllState();
       } else {
         debugPrint("Logout failed: ${response.statusCode} ${response.body}");
       }
@@ -132,22 +156,25 @@ class AuthProvider with ChangeNotifier {
         "password": password,
       };
       final response = await http.post(
-        Uri.parse('$baseUrl/members/auth/register'),
+        Uri.parse('$baseUrl/auth/register'),
         body: jsonEncode(body),
         headers: {'Content-Type': 'application/json'},
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         final data = jsonDecode(response.body);
         String token = Token.fromJson(data)!.key;
         storeAccessToken(token);
         isAuthenticated = true;
+        message = null;
 
         if (context.mounted) {
           context.go("/");
         }
         debugPrint("Signup successful $token");
       } else {
+        final data = jsonDecode(response.body);
+        message = data["message"];
         debugPrint(
             "Error: sign up failed, ${response.statusCode}: ${response.body}");
       }
@@ -169,15 +196,17 @@ class AuthProvider with ChangeNotifier {
           Uri.parse('$baseUrl/user'),
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token'
+            'Authorization': 'Bearer $token',
           },
         );
 
         if (response.statusCode == 200) {
           final data = jsonDecode(response.body);
           user = User.fromJson(data);
+          message = null;
         } else {
-          debugPrint('Error fetching user details: ${response.statusCode}');
+          debugPrint(
+              'Error fetching user details: ${response.statusCode} ${response.body}');
         }
 
         setLoading(false);
@@ -189,6 +218,7 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> updateUserDetail(
+    BuildContext context,
     int id,
     String username,
     String email,
@@ -201,14 +231,15 @@ class AuthProvider with ChangeNotifier {
 
     if (token != null) {
       try {
-        final body = jsonEncode({
+        final data = {
           "username": username,
           "email": email,
           "first_name": firstName,
           "last_name": lastName,
-        });
+        };
+        final body = jsonEncode(data);
         final response = await http.put(
-          Uri.parse('$baseUrl/user/$id/'),
+          Uri.parse('$baseUrl/user/update'),
           body: body,
           headers: {
             'Content-Type': 'application/json',
@@ -217,9 +248,14 @@ class AuthProvider with ChangeNotifier {
         );
 
         if (response.statusCode == 200) {
-          final data = jsonDecode(response.body);
-          user = User.fromJson(data);
+          await getUserDetail();
+          message = null;
+          if (context.mounted) {
+            context.pop();
+          }
         } else {
+          final data = jsonDecode(response.body);
+          message = data["message"];
           debugPrint(
               'Error update user details: ${response.statusCode}, ${response.body}');
         }
@@ -234,19 +270,20 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> changePassword(
     BuildContext context,
-    int accountId,
     String oldPassword,
-    String newPassword,
+    String newPassword1,
+    String newPassword2,
   ) async {
     final token = await getAccessToken();
 
     try {
       setLoading(true);
-      final response = await http.post(
-        Uri.parse('$baseUrl/members/$accountId/change-password'),
+      final response = await http.put(
+        Uri.parse('$baseUrl/auth/change-password'),
         body: jsonEncode({
           "old_password": oldPassword,
-          "new_password": newPassword,
+          "new_password1": newPassword1,
+          "new_password2": newPassword2,
         }),
         headers: {
           'Content-Type': 'application/json',
@@ -255,11 +292,14 @@ class AuthProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
+        message = null;
         if (context.mounted) {
           context.go("/");
         }
         changePasswordSucced = true;
       } else {
+        final data = jsonDecode(response.body);
+        message = data["message"];
         debugPrint(
             'Change password failed: ${response.statusCode}, ${response.body}');
       }
@@ -271,18 +311,24 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<void> resetPassword(String email) async {
+  Future<void> resetPassword(BuildContext context, String email) async {
     try {
       setLoading(true);
       final response = await http.post(
-        Uri.parse('$baseUrl/reset-password/request-token'),
+        Uri.parse('$baseUrl/auth/reset-password'),
         body: jsonEncode({"email": email}),
         headers: {'Content-Type': 'application/json'},
       );
 
       if (response.statusCode == 200) {
+        message = null;
         resetPasswordTokenSended = true;
+        if (context.mounted) {
+          context.go("/confirm-reset-password");
+        }
       } else {
+        final data = jsonDecode(response.body);
+        message = data["message"];
         debugPrint(
             'Error reset user password: ${response.statusCode}, ${response.body}');
       }
@@ -295,7 +341,11 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> confirmResetPassword(
-      int pin, String password1, String password2) async {
+    BuildContext context,
+    int pin,
+    String password1,
+    String password2,
+  ) async {
     setLoading(true);
     final body = jsonEncode({
       "pin": pin,
@@ -305,14 +355,20 @@ class AuthProvider with ChangeNotifier {
 
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/reset-password/confirm'),
+        Uri.parse('$baseUrl/auth/reset-password-confirm'),
         body: body,
         headers: {'Content-Type': 'application/json'},
       );
 
       if (response.statusCode == 200) {
+        message = null;
         resetPasswordSucced = true;
+        if (context.mounted) {
+          context.go("/");
+        }
       } else {
+        final data = jsonDecode(response.body);
+        message = data["message"];
         debugPrint(
             'Error confirm reset user password: ${response.statusCode}, ${response.body}');
       }
@@ -328,13 +384,13 @@ class AuthProvider with ChangeNotifier {
     setLoading(true);
     final token = await getAccessToken();
 
-    String url = '$baseUrl/members/${user?.accountId}/loans/';
+    String url = '$baseUrl/user/loans';
     if (filterByUpcoming) {
       url += '?near_outstanding=True';
     } else if (filterByOverdued) {
       url += '?overdue=True';
-    } else {
-      null;
+    } else if (pageNumber > 1) {
+      url += "?page=$pageNumber";
     }
 
     try {
@@ -347,9 +403,16 @@ class AuthProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
+        message = null;
         final data = jsonDecode(response.body);
-        memberLoans = data["results"];
+        memberLoans = data["data"];
+        hasNextPage = data["has_next"];
+        hasPrevPage = data["has_prev"];
+        pageNumber = data["page_number"];
+        totalPages = data["total_pages"];
       } else {
+        final data = jsonDecode(response.body);
+        message = data["message"];
         debugPrint(
             "Failed to get member loan. ${response.statusCode}: ${response.body}");
       }
@@ -377,6 +440,7 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> createMemberLoan(int memberId, int bookId, int loanDay) async {
     final token = await getAccessToken();
+    String url = '$baseUrl/user/loans';
 
     final now = DateTime.now();
     final dueDate = now.add(Duration(days: loanDay));
@@ -390,7 +454,7 @@ class AuthProvider with ChangeNotifier {
     try {
       setLoading(true);
       final response = await http.post(
-        Uri.parse('$baseUrl/members/$memberId/loans/'),
+        Uri.parse(url),
         body: jsonEncode(body),
         headers: {
           'Content-Type': 'application/json',
@@ -399,31 +463,33 @@ class AuthProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        memberLoans = data["results"];
+        message = null;
+        await getMemberLoan();
       } else {
+        final data = jsonDecode(response.body);
+        message = data["message"];
         debugPrint(
-            "Failed to create member loan. ${response.statusCode}: ${response.body}");
+            "Failed to add member loan. ${response.statusCode}: ${response.body}");
       }
 
       loanBookSuccess = true;
       setLoading(false);
       notifyListeners();
     } catch (error) {
-      debugPrint("Failed to create member loan. $error");
+      debugPrint("Failed to add member loan. $error");
     }
   }
 
   // for admin or librarian
   Future<void> getLoans(String? type) async {
     final token = await storage.read(key: 'access_token');
-    String url = baseUrl;
+    String url = "$baseUrl/book-loans";
     if (type == "upcoming") {
-      url += "/upcoming-loans/";
+      url += '?near_outstanding=True';
     } else if (type == "overdue") {
-      url += "/overdued-loans/";
-    } else {
-      url += "/book-loans/";
+      url += '?overdue=True';
+    } else if (pageNumber > 1) {
+      url += "?page=$pageNumber";
     }
 
     if (token != null) {
@@ -440,12 +506,16 @@ class AuthProvider with ChangeNotifier {
         if (response.statusCode == 200) {
           final data = jsonDecode(response.body);
           if (type == "upcoming") {
-            nearOutstandingLoans = data["results"];
+            nearOutstandingLoans = data["data"];
           } else if (type == "overdue") {
-            overduedLoans = data["results"];
+            overduedLoans = data["data"];
           } else {
-            loans = data["results"];
+            loans = data["data"];
           }
+          hasNextPage = data["has_next"];
+          hasPrevPage = data["has_prev"];
+          pageNumber = data["page_number"];
+          totalPages = data["total_pages"];
         } else {
           final code = response.statusCode;
           debugPrint("Error: Fetch upcoming loans failed, $code");

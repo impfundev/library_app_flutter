@@ -24,17 +24,19 @@ class _SearchForm extends State<SearchForm> {
       width: queryData.size.width * 0.8,
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: SearchBar(
-        hintText: "Enter keywords...",
+        hintText: "Enter book title...",
         elevation: WidgetStateProperty.all(0),
         onChanged: (value) {
-          Future.delayed(
-            Duration.zero,
-            () {
-              Provider.of<BookProvider>(context, listen: false)
-                  .setSearchKeyword(value);
-              Provider.of<BookProvider>(context, listen: false).getBooks();
-            },
-          );
+          if (value.length >= 3) {
+            Future.delayed(
+              Duration.zero,
+              () {
+                Provider.of<BookProvider>(context, listen: false)
+                    .setSearchKeyword(value);
+                Provider.of<BookProvider>(context, listen: false).getBooks();
+              },
+            );
+          }
         },
         leading: const Icon(Icons.search),
       ),

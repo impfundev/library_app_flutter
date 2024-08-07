@@ -36,6 +36,40 @@ class _AdminLoanList extends State<AdminLoanList> {
     super.initState();
   }
 
+  ScrollController listScrollController = ScrollController();
+  void scrollToTop() {
+    if (listScrollController.hasClients) {
+      final position = listScrollController.position.minScrollExtent;
+      listScrollController.jumpTo(position);
+    }
+  }
+
+  Future<void> nextPage() async {
+    if (Provider.of<AuthProvider>(context, listen: false).hasNextPage) {
+      Provider.of<AuthProvider>(context, listen: false).setPage(
+        Provider.of<AuthProvider>(context, listen: false).pageNumber + 1,
+      );
+    } else {
+      Provider.of<AuthProvider>(context, listen: false).setPage(
+          Provider.of<AuthProvider>(context, listen: false).totalPages!);
+    }
+    Provider.of<AuthProvider>(context, listen: false).getMemberLoan();
+    scrollToTop();
+  }
+
+  Future<void> prevPage() async {
+    if (Provider.of<AuthProvider>(context, listen: false).hasPrevPage) {
+      Provider.of<AuthProvider>(context, listen: false).setPage(
+        Provider.of<AuthProvider>(context, listen: false).pageNumber - 1,
+      );
+    } else {
+      Provider.of<AuthProvider>(context, listen: false).setPage(1);
+    }
+
+    Provider.of<AuthProvider>(context, listen: false).getMemberLoan();
+    scrollToTop();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(builder: (context, loanProvider, child) {
@@ -45,18 +79,8 @@ class _AdminLoanList extends State<AdminLoanList> {
       if (getLoans != null) {
         var loans = getLoans.map(
           (loan) {
-            var book = Book.fromJson(loan["book_detail"]);
-            var memberData = loan["member_detail"];
-            var userData = memberData["user"];
-            var user = User(
-              userData["id"],
-              memberData["id"],
-              userData["username"],
-              userData["email"],
-              userData["first_name"],
-              userData["last_name"],
-              userData["is_staff"],
-            );
+            var book = Book.fromJson(loan["book"]);
+            var user = User.fromJson(loan["user"]);
 
             return Loan(
               book,
@@ -73,13 +97,34 @@ class _AdminLoanList extends State<AdminLoanList> {
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return [TopAppBar(title: title)];
           },
-          body: ListView(
-            children: List.generate(loans.length, (index) {
-              return LoanItem(
-                loans.elementAt(index),
-                user: loans.elementAt(index).user,
-              );
-            }),
+          body: ListView.builder(
+            controller: listScrollController,
+            itemCount: loans.length + 1,
+            itemBuilder: (context, index) {
+              if (index < loans.length) {
+                return LoanItem(
+                  loans.elementAt(index),
+                );
+              } else {
+                return Container(
+                  padding: const EdgeInsets.all(10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ElevatedButton(
+                        onPressed: prevPage,
+                        child: const Text('Prev'),
+                      ),
+                      Text(loanProvider.pageNumber.toString()),
+                      ElevatedButton(
+                        onPressed: nextPage,
+                        child: const Text('Next'),
+                      ),
+                    ],
+                  ),
+                );
+              }
+            },
           ),
         );
       } else {

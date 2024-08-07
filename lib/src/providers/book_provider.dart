@@ -12,6 +12,11 @@ class BookProvider with ChangeNotifier {
   String? searchKeyword;
   String? filterByCategory;
 
+  bool hasNextPage = false;
+  bool hasPrevPage = false;
+  int pageNumber = 1;
+  int? totalPages;
+
   bool isLoading = false;
 
   void setLoading(bool value) {
@@ -23,9 +28,11 @@ class BookProvider with ChangeNotifier {
       setLoading(true);
       String url = '$baseUrl/books';
       if (filterByCategory != null) {
-        url += '?category__name=$filterByCategory';
+        url += '?category=$filterByCategory';
       } else if (searchKeyword != null) {
         url += "?search=$searchKeyword";
+      } else if (pageNumber > 1) {
+        url += "?page=$pageNumber";
       }
 
       final response = await http.get(
@@ -35,7 +42,11 @@ class BookProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        books = data["results"];
+        books = data["data"];
+        hasNextPage = data["has_next"];
+        hasPrevPage = data["has_prev"];
+        pageNumber = data["page_number"];
+        totalPages = data["total_pages"];
       } else {
         final code = response.statusCode;
         debugPrint("Error: Fetch books failed, $code");
@@ -58,8 +69,14 @@ class BookProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void setPage(int value) {
+    pageNumber = value;
+    notifyListeners();
+  }
+
   Future<void> getCategories() async {
     try {
+      setLoading(true);
       final response = await http.get(
         Uri.parse('$baseUrl/categories'),
         headers: {'Content-Type': 'application/json'},
@@ -67,11 +84,12 @@ class BookProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        categories = data["results"];
+        categories = data;
       } else {
         debugPrint("Error: Fetch books failed, ${response.statusCode}");
       }
 
+      setLoading(false);
       notifyListeners();
     } catch (error) {
       debugPrint("Error: Fetch books failed, $error");

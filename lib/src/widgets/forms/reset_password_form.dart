@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:library_app/src/providers/auth_provider.dart';
-import 'package:library_app/src/screens/form_screen.dart';
 import 'package:library_app/src/widgets/loading.dart';
 import 'package:provider/provider.dart';
 
@@ -22,6 +22,8 @@ class _ResetPasswordForm extends State<ResetPasswordForm> {
     const String formText = "Confirm your email to continue reset password";
 
     return Consumer<AuthProvider>(builder: (context, authProvider, child) {
+      final message = authProvider.message;
+
       return Column(
         children: [
           Container(
@@ -67,13 +69,14 @@ class _ResetPasswordForm extends State<ResetPasswordForm> {
                       validator: (String? value) {
                         if (value == null || value.isEmpty) {
                           return "Please enter your email";
-                        } else if (!value.contains("@")) {
-                          return "Email should include '@'";
                         }
                         return null;
                       },
                     ),
-                    // Flutter, iwant to go to ConfirmResetPasswordScreen after authProvider.resetPassword succeed with response 200
+                    Text(
+                      message ?? "",
+                      style: const TextStyle(color: Colors.red),
+                    ),
                     Container(
                       padding: const EdgeInsets.symmetric(
                         vertical: 20.0,
@@ -85,22 +88,8 @@ class _ResetPasswordForm extends State<ResetPasswordForm> {
                             child: FilledButton(
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {}
-                                authProvider
-                                    .resetPassword(emailController.text)
-                                    .then(
-                                  (response) {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const ConfirmResetPasswordScreen(),
-                                      ),
-                                    );
-                                  },
-                                ).catchError(
-                                  (error) {
-                                    debugPrint('Exception: $error');
-                                  },
-                                );
+                                authProvider.resetPassword(
+                                    context, emailController.text);
                               },
                               child: authProvider.isLoading
                                   ? const Loading()
@@ -142,12 +131,7 @@ class _ConfirmResetPasswordForm extends State<ConfirmResetPasswordForm> {
     const String formText = "Enter the pin that we just sent to your email";
 
     return Consumer<AuthProvider>(builder: (context, authProvider, child) {
-      if (authProvider.isLoading) {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      }
-
+      final message = authProvider.message;
       return Column(
         children: [
           Container(
@@ -190,6 +174,17 @@ class _ConfirmResetPasswordForm extends State<ConfirmResetPasswordForm> {
                         labelText: "confirmation pin",
                         suffixIcon: Icon(Icons.password),
                       ),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      validator: (String? value) {
+                        if (value == null) {
+                          return "Please enter your pin";
+                        } else if (value is int) {
+                          return "Please enter pin in number";
+                        }
+
+                        return null;
+                      },
                     ),
                     TextFormField(
                       controller: password1Controller,
@@ -241,11 +236,15 @@ class _ConfirmResetPasswordForm extends State<ConfirmResetPasswordForm> {
                       validator: (String? value) {
                         if (value == null || value.isEmpty) {
                           return "Please enter your password";
-                        } else {
-                          return null;
                         }
+
+                        return null;
                       },
                       keyboardType: TextInputType.visiblePassword,
+                    ),
+                    Text(
+                      message ?? "",
+                      style: const TextStyle(color: Colors.red),
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -258,28 +257,16 @@ class _ConfirmResetPasswordForm extends State<ConfirmResetPasswordForm> {
                             child: FilledButton(
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {}
-                                authProvider
-                                    .confirmResetPassword(
+                                authProvider.confirmResetPassword(
+                                  context,
                                   int.parse(pinController.text),
                                   password1Controller.text,
                                   password2Controller.text,
-                                )
-                                    .then(
-                                  (response) {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const LoginScreen(),
-                                      ),
-                                    );
-                                  },
-                                ).catchError(
-                                  (error) {
-                                    debugPrint('Exception: $error');
-                                  },
                                 );
                               },
-                              child: const Text("Submit"),
+                              child: authProvider.isLoading
+                                  ? const Loading()
+                                  : const Text("Submit"),
                             ),
                           ),
                         ],
