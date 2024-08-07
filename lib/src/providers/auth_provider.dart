@@ -488,8 +488,8 @@ class AuthProvider with ChangeNotifier {
       url += '?near_outstanding=True';
     } else if (type == "overdue") {
       url += '?overdue=True';
-    } else {
-      null;
+    } else if (pageNumber > 1) {
+      url += "?page=$pageNumber";
     }
 
     if (token != null) {
@@ -512,6 +512,10 @@ class AuthProvider with ChangeNotifier {
           } else {
             loans = data["data"];
           }
+          hasNextPage = data["has_next"];
+          hasPrevPage = data["has_prev"];
+          pageNumber = data["page_number"];
+          totalPages = data["total_pages"];
         } else {
           final code = response.statusCode;
           debugPrint("Error: Fetch upcoming loans failed, $code");
