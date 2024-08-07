@@ -87,7 +87,10 @@ class _LoanList extends State<LoanList> {
             itemCount: loans.length + 1,
             itemBuilder: (context, index) {
               if (index < loans.length) {
-                return LoanItem(loans.elementAt(index));
+                return LoanItem(
+                  loans.elementAt(index),
+                  user: loans.elementAt(index).user,
+                );
               } else {
                 return Container(
                   padding: const EdgeInsets.all(10),
