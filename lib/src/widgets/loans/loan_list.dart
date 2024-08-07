@@ -26,6 +26,40 @@ class _LoanList extends State<LoanList> {
     super.initState();
   }
 
+  ScrollController listScrollController = ScrollController();
+  void scrollToTop() {
+    if (listScrollController.hasClients) {
+      final position = listScrollController.position.minScrollExtent;
+      listScrollController.jumpTo(position);
+    }
+  }
+
+  Future<void> nextPage() async {
+    if (Provider.of<AuthProvider>(context, listen: false).hasNextPage) {
+      Provider.of<AuthProvider>(context, listen: false).setPage(
+        Provider.of<AuthProvider>(context, listen: false).pageNumber + 1,
+      );
+    } else {
+      Provider.of<AuthProvider>(context, listen: false).setPage(
+          Provider.of<AuthProvider>(context, listen: false).totalPages!);
+    }
+    Provider.of<AuthProvider>(context, listen: false).getMemberLoan();
+    scrollToTop();
+  }
+
+  Future<void> prevPage() async {
+    if (Provider.of<AuthProvider>(context, listen: false).hasPrevPage) {
+      Provider.of<AuthProvider>(context, listen: false).setPage(
+        Provider.of<AuthProvider>(context, listen: false).pageNumber - 1,
+      );
+    } else {
+      Provider.of<AuthProvider>(context, listen: false).setPage(1);
+    }
+
+    Provider.of<AuthProvider>(context, listen: false).getMemberLoan();
+    scrollToTop();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(builder: (context, authProvider, child) {
@@ -48,10 +82,32 @@ class _LoanList extends State<LoanList> {
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return [const TopAppBar(title: "Book Loans")];
           },
-          body: ListView(
-            children: List.generate(loans.length, (index) {
-              return LoanItem(loans.elementAt(index));
-            }),
+          body: ListView.builder(
+            controller: listScrollController,
+            itemCount: loans.length + 1,
+            itemBuilder: (context, index) {
+              if (index < loans.length) {
+                return LoanItem(loans.elementAt(index));
+              } else {
+                return Container(
+                  padding: const EdgeInsets.all(10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ElevatedButton(
+                        onPressed: prevPage,
+                        child: const Text('Prev'),
+                      ),
+                      Text(authProvider.pageNumber.toString()),
+                      ElevatedButton(
+                        onPressed: nextPage,
+                        child: const Text('Next'),
+                      ),
+                    ],
+                  ),
+                );
+              }
+            },
           ),
         );
       } else {

@@ -28,6 +28,11 @@ class AuthProvider with ChangeNotifier {
   bool changePasswordSucced = false;
   bool loanBookSuccess = false;
 
+  bool hasNextPage = false;
+  bool hasPrevPage = false;
+  int pageNumber = 1;
+  int? totalPages;
+
   List<dynamic>? loans;
   List<dynamic>? nearOutstandingLoans;
   List<dynamic>? overduedLoans;
@@ -60,6 +65,7 @@ class AuthProvider with ChangeNotifier {
     loans = null;
     nearOutstandingLoans = null;
     overduedLoans = null;
+    totalPages = null;
 
     isAuthenticated = false;
     invalidUsernameOrPassword = false;
@@ -70,6 +76,13 @@ class AuthProvider with ChangeNotifier {
     resetPasswordSucced = false;
     changePasswordSucced = false;
     loanBookSuccess = false;
+    hasNextPage = false;
+    hasPrevPage = false;
+  }
+
+  void setPage(int value) {
+    pageNumber = value;
+    notifyListeners();
   }
 
   Future<void> signIn(
@@ -376,8 +389,8 @@ class AuthProvider with ChangeNotifier {
       url += '?near_outstanding=True';
     } else if (filterByOverdued) {
       url += '?overdue=True';
-    } else {
-      null;
+    } else if (pageNumber > 1) {
+      url += "?page=$pageNumber";
     }
 
     try {
@@ -392,7 +405,11 @@ class AuthProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         message = null;
         final data = jsonDecode(response.body);
-        memberLoans = data;
+        memberLoans = data["data"];
+        hasNextPage = data["has_next"];
+        hasPrevPage = data["has_prev"];
+        pageNumber = data["page_number"];
+        totalPages = data["total_pages"];
       } else {
         final data = jsonDecode(response.body);
         message = data["message"];

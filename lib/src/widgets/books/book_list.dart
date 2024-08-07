@@ -64,6 +64,11 @@ class _BookList extends State<BookList> {
   Widget build(BuildContext context) {
     return Consumer<BookProvider>(
       builder: (context, bookProvider, child) {
+        if (bookProvider.books == null) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
         final Iterable<Book> books = bookProvider.books!.map((book) {
           if (book["category"] != null) {
             final Category category = Category.fromJson(
