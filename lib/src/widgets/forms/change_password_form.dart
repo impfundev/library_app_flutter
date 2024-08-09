@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:library_app/src/providers/auth_provider.dart';
-import 'package:library_app/src/widgets/loading.dart';
 import 'package:provider/provider.dart';
+
+import 'package:library_app/src/providers/auth_provider.dart';
+import 'package:library_app/src/widgets/ui/button_custom.dart';
 
 class ChangePasswordForm extends StatefulWidget {
   const ChangePasswordForm({super.key});
@@ -140,7 +141,7 @@ class _ChangePasswordForm extends State<ChangePasswordForm> {
                   ),
                   SizedBox(
                     width: double.infinity,
-                    child: FilledButton(
+                    child: ButtonCustom(
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {}
                         authProvider.changePassword(
@@ -150,9 +151,8 @@ class _ChangePasswordForm extends State<ChangePasswordForm> {
                           newPasswordController2.text,
                         );
                       },
-                      child: authProvider.isLoading
-                          ? const Loading()
-                          : const Text("Submit"),
+                      isLoading: authProvider.isLoading,
+                      child: const Text("Submit"),
                     ),
                   ),
                 ],

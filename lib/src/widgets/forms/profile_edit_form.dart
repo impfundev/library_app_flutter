@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:library_app/src/providers/auth_provider.dart';
-
-import 'package:library_app/src/models/user.dart';
+import 'package:library_app/src/widgets/ui/button_custom.dart';
 import 'package:provider/provider.dart';
+
+import 'package:library_app/src/providers/auth_provider.dart';
+import 'package:library_app/src/models/user.dart';
 
 class ProfileEditForm extends StatefulWidget {
   final User? user;
@@ -102,7 +103,7 @@ class _ProfileEditForm extends State<ProfileEditForm> {
                     padding: const EdgeInsets.only(top: 40.0),
                     child: SizedBox(
                       width: double.infinity,
-                      child: FilledButton(
+                      child: ButtonCustom(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {}
                           authProvider.updateUserDetail(
@@ -115,6 +116,7 @@ class _ProfileEditForm extends State<ProfileEditForm> {
                             authProvider.user!.isStaff,
                           );
                         },
+                        isLoading: authProvider.isLoading,
                         child: const Text("Submit"),
                       ),
                     ),

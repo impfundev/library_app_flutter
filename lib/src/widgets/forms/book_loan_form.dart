@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:library_app/src/providers/auth_provider.dart';
+import 'package:library_app/src/widgets/ui/button_custom.dart';
 import 'package:provider/provider.dart';
 
 class LoanBookForm extends StatefulWidget {
@@ -86,17 +87,16 @@ class _LoanBookForm extends State<LoanBookForm> {
                       },
                       child: const Text('Cancel'),
                     ),
-                    FilledButton(
+                    ButtonCustom(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {}
-                        authProvider
-                            .createMemberLoan(
-                              authProvider.user!.id,
-                              widget.bookId,
-                              int.parse(loanDayController.text),
-                            )
-                            .then((_) => Navigator.of(context).pop());
+                        authProvider.createMemberLoan(
+                          authProvider.user!.id,
+                          widget.bookId,
+                          int.parse(loanDayController.text),
+                        );
                       },
+                      isLoading: authProvider.isLoading,
                       child: const Text('Submit'),
                     ),
                   ],

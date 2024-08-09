@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:library_app/src/providers/auth_provider.dart';
+import 'package:library_app/src/widgets/ui/button_custom.dart';
 import 'package:provider/provider.dart';
+
+import 'package:library_app/src/providers/auth_provider.dart';
 
 class SignUpForm extends StatefulWidget {
   const SignUpForm({super.key});
@@ -131,7 +133,7 @@ class _SignUpForm extends State<SignUpForm> {
                     children: [
                       SizedBox(
                         width: double.infinity,
-                        child: FilledButton(
+                        child: ButtonCustom(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {}
                             authProvider.signUp(
@@ -141,6 +143,7 @@ class _SignUpForm extends State<SignUpForm> {
                               passwordController.text,
                             );
                           },
+                          isLoading: authProvider.isLoading,
                           child: const Text("Submit"),
                         ),
                       ),

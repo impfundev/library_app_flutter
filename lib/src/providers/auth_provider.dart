@@ -226,11 +226,11 @@ class AuthProvider with ChangeNotifier {
     String? lastName,
     bool isStaff,
   ) async {
-    setLoading(true);
     final token = await getAccessToken();
 
     if (token != null) {
       try {
+        setLoading(true);
         final data = {
           "username": username,
           "email": email,

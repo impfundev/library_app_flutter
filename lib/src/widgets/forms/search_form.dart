@@ -28,14 +28,9 @@ class _SearchForm extends State<SearchForm> {
         elevation: WidgetStateProperty.all(0),
         onChanged: (value) {
           if (value.length >= 3) {
-            Future.delayed(
-              Duration.zero,
-              () {
-                Provider.of<BookProvider>(context, listen: false)
-                    .setSearchKeyword(value);
-                Provider.of<BookProvider>(context, listen: false).getBooks();
-              },
-            );
+            Provider.of<BookProvider>(context, listen: false)
+                .setSearchKeyword(value);
+            Provider.of<BookProvider>(context, listen: false).getBooks();
           }
         },
         leading: const Icon(Icons.search),

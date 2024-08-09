@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:library_app/src/providers/auth_provider.dart';
-import 'package:library_app/src/widgets/loading.dart';
+import 'package:library_app/src/widgets/ui/button_custom.dart';
 import 'package:provider/provider.dart';
 
 class ResetPasswordForm extends StatefulWidget {
@@ -85,15 +85,14 @@ class _ResetPasswordForm extends State<ResetPasswordForm> {
                         children: [
                           SizedBox(
                             width: double.infinity,
-                            child: FilledButton(
+                            child: ButtonCustom(
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {}
                                 authProvider.resetPassword(
                                     context, emailController.text);
                               },
-                              child: authProvider.isLoading
-                                  ? const Loading()
-                                  : const Text("Submit"),
+                              isLoading: authProvider.isLoading,
+                              child: const Text("Submit"),
                             ),
                           ),
                         ],
@@ -254,7 +253,7 @@ class _ConfirmResetPasswordForm extends State<ConfirmResetPasswordForm> {
                         children: [
                           SizedBox(
                             width: double.infinity,
-                            child: FilledButton(
+                            child: ButtonCustom(
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {}
                                 authProvider.confirmResetPassword(
@@ -264,9 +263,8 @@ class _ConfirmResetPasswordForm extends State<ConfirmResetPasswordForm> {
                                   password2Controller.text,
                                 );
                               },
-                              child: authProvider.isLoading
-                                  ? const Loading()
-                                  : const Text("Submit"),
+                              isLoading: authProvider.isLoading,
+                              child: const Text("Submit"),
                             ),
                           ),
                         ],
