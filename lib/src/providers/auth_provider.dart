@@ -11,7 +11,7 @@ import 'package:library_app/src/models/user.dart';
 class AuthProvider with ChangeNotifier {
   final storage = const FlutterSecureStorage();
 
-  String baseUrl = 'http://localhost:8000/api/v1';
+  String baseUrl = 'http://ilhammaulana.pythonanywhere.com/api/v1';
   String? message;
 
   User? user;

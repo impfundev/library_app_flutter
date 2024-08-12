@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class BookProvider with ChangeNotifier {
-  String baseUrl = 'http://localhost:8000/api/v1';
+  String baseUrl = 'http://ilhammaulana.pythonanywhere.com/api/v1';
   List<dynamic>? books;
   List<dynamic>? categories;
   Category? category;
