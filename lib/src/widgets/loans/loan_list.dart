@@ -145,7 +145,6 @@ class _TopAppBar extends State<TopAppBar> {
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(builder: (context, authBuilder, child) {
-      final screenSize = MediaQuery.of(context).size;
       return SliverAppBar(
         title: Text(showWidget ? "" : title),
         actions: [
