@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:library_app/src/models/book.dart';
 import 'package:library_app/src/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
@@ -143,6 +145,7 @@ class _TopAppBar extends State<TopAppBar> {
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(builder: (context, authBuilder, child) {
+      final screenSize = MediaQuery.of(context).size;
       return SliverAppBar(
         title: Text(showWidget ? "" : title),
         actions: [
@@ -159,23 +162,33 @@ class _TopAppBar extends State<TopAppBar> {
                   showWidget ? Icons.close : Icons.filter_alt_outlined,
                 ),
               ),
-              Offstage(
-                offstage: !showWidget,
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              if (showWidget)
+                const Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Row(
-                      children: [Text("Upcoming"), SwitchToUpcoming()],
+                      children: [
+                        Text(
+                          "Upcoming",
+                          style: TextStyle(fontSize: 12.0),
+                        ),
+                        SwitchToUpcoming()
+                      ],
                     ),
                     SizedBox(
                       width: 20.0,
                     ),
                     Row(
-                      children: [Text("Overdue"), SwitchToOverdued()],
+                      children: [
+                        Text(
+                          "Overdue",
+                          style: TextStyle(fontSize: 12.0),
+                        ),
+                        SwitchToOverdued()
+                      ],
                     ),
                   ],
                 ),
-              )
             ],
           ),
         ],
