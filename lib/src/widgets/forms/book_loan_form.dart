@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:library_app/src/providers/auth_provider.dart';
 import 'package:library_app/src/widgets/ui/button_custom.dart';
 import 'package:provider/provider.dart';
@@ -95,6 +96,7 @@ class _LoanBookForm extends State<LoanBookForm> {
                           widget.bookId,
                           int.parse(loanDayController.text),
                         );
+                        context.pop();
                       },
                       isLoading: authProvider.isLoading,
                       child: const Text('Submit'),
