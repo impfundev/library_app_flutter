@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 import 'package:library_app/src/screens/profile_edit_screen.dart';
@@ -12,8 +13,11 @@ import 'package:library_app/src/providers/book_provider.dart';
 import 'package:library_app/src/screens/form_screen.dart';
 import 'package:library_app/src/screens/list/list_screen.dart';
 
-void main() {
-  runApp(const LibraryApp());
+void main() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  final isAuthenticated = prefs.getString('access_token') != null;
+
+  runApp(isAuthenticated ? const LibraryApp() : const LoginScreen());
 }
 
 class LibraryApp extends StatefulWidget {
@@ -32,17 +36,11 @@ class _LibraryApp extends State<LibraryApp> {
       routes: [
         GoRoute(
           path: '/',
-          builder: (context, state) =>
-              Provider.of<AuthProvider>(context).isAuthenticated
-                  ? const ListScreen()
-                  : const LoginScreen(),
+          builder: (context, state) => const ListScreen(),
         ),
         GoRoute(
           path: '/sign-up',
-          builder: (context, state) =>
-              Provider.of<AuthProvider>(context).isAuthenticated
-                  ? const ListScreen()
-                  : const SignUpScreen(),
+          builder: (context, state) => const SignUpScreen(),
         ),
         GoRoute(
           path: '/reset-password',

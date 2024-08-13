@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
@@ -9,13 +9,10 @@ import 'package:library_app/src/models/token.dart';
 import 'package:library_app/src/models/user.dart';
 
 class AuthProvider with ChangeNotifier {
-  final storage = const FlutterSecureStorage();
-
   String baseUrl = 'https://ilhammaulana.pythonanywhere.com/api/v1';
   String? message;
 
   User? user;
-  bool isAuthenticated = false;
   bool invalidUsernameOrPassword = false;
   List<dynamic>? memberLoans;
 
@@ -38,11 +35,13 @@ class AuthProvider with ChangeNotifier {
   List<dynamic>? overduedLoans;
 
   Future<void> storeAccessToken(String accessToken) async {
-    await storage.write(key: 'access_token', value: accessToken);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('access_token', accessToken);
   }
 
   Future<String?> getAccessToken() async {
-    return await storage.read(key: 'access_token');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('access_token');
   }
 
   void setLoading(bool value) {
@@ -67,7 +66,6 @@ class AuthProvider with ChangeNotifier {
     overduedLoans = null;
     totalPages = null;
 
-    isAuthenticated = false;
     invalidUsernameOrPassword = false;
     filterByUpcoming = false;
     filterByOverdued = false;
@@ -100,7 +98,6 @@ class AuthProvider with ChangeNotifier {
         String token = Token.fromJson(data)!.key;
         await storeAccessToken(token);
 
-        isAuthenticated = true;
         setInvalidUsernameOrPassword(false);
 
         debugPrint("Login successful $token");
@@ -133,7 +130,8 @@ class AuthProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        await storage.delete(key: 'token');
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.remove('access_token');
         resetAllState();
       } else {
         debugPrint("Logout failed: ${response.statusCode} ${response.body}");
@@ -165,7 +163,6 @@ class AuthProvider with ChangeNotifier {
         final data = jsonDecode(response.body);
         String token = Token.fromJson(data)!.key;
         storeAccessToken(token);
-        isAuthenticated = true;
         message = null;
 
         if (context.mounted) {
@@ -482,7 +479,7 @@ class AuthProvider with ChangeNotifier {
 
   // for admin or librarian
   Future<void> getLoans(String? type) async {
-    final token = await storage.read(key: 'access_token');
+    final token = await getAccessToken();
     String url = "$baseUrl/book-loans";
     if (type == "upcoming") {
       url += '?near_outstanding=True';
