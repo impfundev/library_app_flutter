@@ -17,9 +17,11 @@ class LoanList extends StatefulWidget {
 class _LoanList extends State<LoanList> {
   @override
   void initState() {
-    if (context.mounted) {
-      Provider.of<AuthProvider>(context, listen: false).getMemberLoan();
-    }
+    Future.delayed(Duration.zero, () {
+      if (context.mounted) {
+        Provider.of<AuthProvider>(context, listen: false).getMemberLoan();
+      }
+    });
     super.initState();
   }
 

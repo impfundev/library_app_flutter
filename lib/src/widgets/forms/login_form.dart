@@ -140,13 +140,6 @@ class _LoginForm extends State<LoginForm> {
                           onPressed: () => context.go("/sign-up"),
                         ),
                       ),
-                      SizedBox(
-                        width: double.infinity,
-                        child: TextButton(
-                          child: const Text("Forgot Password"),
-                          onPressed: () => context.go("/reset-password"),
-                        ),
-                      ),
                     ],
                   ),
                 ],

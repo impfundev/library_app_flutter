@@ -17,9 +17,11 @@ class _HomePage extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    if (context.mounted) {
-      Provider.of<AuthProvider>(context, listen: false).getUserDetail();
-    }
+    Future.delayed(Duration.zero, () {
+      if (context.mounted) {
+        Provider.of<AuthProvider>(context, listen: false).getUserDetail();
+      }
+    });
   }
 
   @override

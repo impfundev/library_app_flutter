@@ -86,7 +86,7 @@ class SignUpScreen extends StatelessWidget {
 
     return FormScreen(
       title: title,
-      backRoute: "/",
+      backRoute: "/login",
       body: const SignUpForm(),
     );
   }
@@ -116,7 +116,7 @@ class ResetPasswordScreen extends StatelessWidget {
 
     return FormScreen(
       title: title,
-      backRoute: "/",
+      backRoute: "/login",
       body: const ResetPasswordForm(),
     );
   }

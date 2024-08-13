@@ -16,11 +16,13 @@ class _Profile extends State<Profile> {
   @override
   void initState() {
     super.initState();
-    if (context.mounted) {
-      if (Provider.of<AuthProvider>(context, listen: false).user == null) {
-        Provider.of<AuthProvider>(context, listen: false).getUserDetail();
+    Future.delayed(Duration.zero, () {
+      if (context.mounted) {
+        if (Provider.of<AuthProvider>(context, listen: false).user == null) {
+          Provider.of<AuthProvider>(context, listen: false).getUserDetail();
+        }
       }
-    }
+    });
   }
 
   @override
@@ -97,7 +99,7 @@ class _Profile extends State<Profile> {
                     OutlinedButton(
                       child: const Text("Log Out"),
                       onPressed: () {
-                        authProvider.signOut();
+                        authProvider.signOut(context);
                       },
                     ),
                   ],

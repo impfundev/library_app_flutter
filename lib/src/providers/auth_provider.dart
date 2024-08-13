@@ -99,7 +99,7 @@ class AuthProvider with ChangeNotifier {
         await storeAccessToken(token);
 
         setInvalidUsernameOrPassword(false);
-
+        if (context.mounted) context.go("/");
         debugPrint("Login successful $token");
       } else if (response.statusCode == 400) {
         setInvalidUsernameOrPassword(true);
@@ -116,7 +116,7 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<void> signOut() async {
+  Future<void> signOut(BuildContext context) async {
     final token = await getAccessToken();
 
     try {
@@ -133,6 +133,7 @@ class AuthProvider with ChangeNotifier {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.remove('access_token');
         resetAllState();
+        if (context.mounted) context.go("/");
       } else {
         debugPrint("Logout failed: ${response.statusCode} ${response.body}");
       }
