@@ -27,12 +27,9 @@ class _AdminLoanList extends State<AdminLoanList> {
 
   @override
   void initState() {
-    Future.delayed(
-      Duration.zero,
-      () {
-        Provider.of<AuthProvider>(context, listen: false).getLoans(type);
-      },
-    );
+    if (context.mounted) {
+      Provider.of<AuthProvider>(context, listen: false).getLoans(type);
+    }
     super.initState();
   }
 

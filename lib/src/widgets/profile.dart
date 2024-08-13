@@ -16,14 +16,11 @@ class _Profile extends State<Profile> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(
-      Duration.zero,
-      () {
-        if (Provider.of<AuthProvider>(context, listen: false).user == null) {
-          Provider.of<AuthProvider>(context, listen: false).getUserDetail();
-        }
-      },
-    );
+    if (context.mounted) {
+      if (Provider.of<AuthProvider>(context, listen: false).user == null) {
+        Provider.of<AuthProvider>(context, listen: false).getUserDetail();
+      }
+    }
   }
 
   @override

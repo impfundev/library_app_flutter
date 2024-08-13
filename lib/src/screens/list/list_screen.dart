@@ -15,12 +15,9 @@ class ListScreen extends StatefulWidget {
 class _ListScreen extends State<ListScreen> {
   @override
   void initState() {
-    Future.delayed(
-      Duration.zero,
-      () {
-        Provider.of<NavigationsProvider>(context, listen: false).navigate(0);
-      },
-    );
+    if (context.mounted) {
+      Provider.of<NavigationsProvider>(context, listen: false).navigate(0);
+    }
     super.initState();
   }
 

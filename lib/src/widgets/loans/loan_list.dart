@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:library_app/src/models/book.dart';
 import 'package:library_app/src/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
@@ -19,12 +17,9 @@ class LoanList extends StatefulWidget {
 class _LoanList extends State<LoanList> {
   @override
   void initState() {
-    Future.delayed(
-      Duration.zero,
-      () {
-        Provider.of<AuthProvider>(context, listen: false).getMemberLoan();
-      },
-    );
+    if (context.mounted) {
+      Provider.of<AuthProvider>(context, listen: false).getMemberLoan();
+    }
     super.initState();
   }
 
