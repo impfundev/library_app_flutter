@@ -1,0 +1,1 @@
+String baseUrl = 'https://ilhammaulana.pythonanywhere.com/api/v1';

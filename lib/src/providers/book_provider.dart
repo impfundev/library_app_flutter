@@ -3,8 +3,9 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
+import 'package:library_app/src/constans.dart';
+
 class BookProvider with ChangeNotifier {
-  String baseUrl = 'https://ilhammaulana.pythonanywhere.com/api/v1';
   List<dynamic>? books;
   List<dynamic>? categories;
   Category? category;

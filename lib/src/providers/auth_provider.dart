@@ -8,8 +8,9 @@ import 'package:http/http.dart' as http;
 import 'package:library_app/src/models/token.dart';
 import 'package:library_app/src/models/user.dart';
 
+import 'package:library_app/src/constans.dart';
+
 class AuthProvider with ChangeNotifier {
-  String baseUrl = 'https://ilhammaulana.pythonanywhere.com/api/v1';
   String? message;
 
   User? user;
